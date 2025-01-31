@@ -1,0 +1,83 @@
+{% extends 'cdashboard.html' %}
+{% block ctitle %} Events {% endblock ctitle %}
+{% block ccontent %}
+{% load static %}
+
+<header id="head">
+    Activity
+</header>
+
+<div class="container" id="Activity" style=" text-align: center;margin-top: 2%;" >
+{% if coordinator.activity == 'not_chosen' and activities %}
+<h4>Choose Your Social Services Activity</h4>
+<small style="color: red;">Select any one of the following only if you've been choosen as the OC of that activity by SW&D Committee.</small>
+<form action="{% url 'choose-social-activity' %}" method="POST">
+    {% csrf_token %}
+    <span style="color:black">Choose your activity :</span>
+    <select name="social_activity_chosen" id="event" required>
+        <option value="Choose..." selected>Choose...</option>
+        {% for activity in activities %}
+        <option value="{{activity.name}}">{{activity.name}}</option>
+        {% endfor %}
+    </select>
+    <input type="submit" class="btn btn sub-btn btn-block mt-2 mb-2" value="Submit">
+</form>
+{% endif %}
+
+{% if coordinator.activity != 'not_chosen' %}
+<h1>Social Services Activity</h1>
+
+
+    {% if not coordinator.qr_codeSS %}
+    <form method="POST" action="{% url 'generate_qr' %}">
+        {% csrf_token %}
+        <input type="hidden" name="activity" value="{{coordinator.activity}}">
+        <button type="submit">Generate QR Code</button>
+    </form>
+    <div>
+    {% else %}
+    <p>Scan this QR code to mark your attendance for {{ coordinator.activity }}</p>
+        <img src="{{coordinator.qr_codeSS.url}}" alt="QR Code for {{coordinator.activity}}">
+    {% endif %}
+
+
+{% endif %}
+
+
+
+
+{% if coordinator.flagshipEvent == 'not_chosen' and flagship_events %}
+<h1>Choose Your Flagship Event</h1>
+<small style="color: red;">Select any one of the following only if you've been choosen as the OC of that activity by SW&D Committee.</small>
+<form action="{% url 'choose-flagship-event' %}" method="POST">
+    {% csrf_token %}
+    <span style="color:black">Choose your flagship event :</span>
+    <select name="flagship_event_chosen" id="event" required>
+        <option value="Choose..." selected>Choose...</option>
+        {% for flagship_event in flagship_events %}
+        <option value="{{flagship_event.name}}">{{flagship_event.name}}</option>
+        {% endfor %}
+    </select>
+    <input type="submit" class="btn btn sub-btn btn-block mt-2 mb-2" value="Submit">
+</form>
+{% endif %}
+
+{% if coordinator.flagshipEvent != 'not_chosen' %}
+<hr>
+<h1>Flagship Event</h1>
+
+
+{% if not coordinator.qr_codeFE %}
+    <form method="POST" action="{% url 'generate_qr' %}">
+        {% csrf_token %}
+        <input type="hidden" name="flagship" value="{{coordinator.flagshipEvent}}">
+        <button type="submit">Generate QR Code</button>
+    </form>
+    <div>
+    {% else %}
+    <p>Scan this QR code to mark your attendance for {{ coordinator.flagshipEvent }}</p>
+        <img src="{{coordinator.qr_codeFE.url}}" alt="QR Code for {{coordinator.flagshipEvent}}">
+    {% endif %}
+{% endif %}
+</div>
+{% endblock ccontent %}

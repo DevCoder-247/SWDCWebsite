@@ -1,0 +1,42 @@
+{% extends 'vdashboard.html' %}
+{% block vtitle %} My Activity {% endblock vtitle %}
+{% block vcontent %}
+{% load static %}
+
+<div id="chooseActivity" class="container">
+    <header id="head">
+        My Activity
+    </header>
+    <br>
+    {% if volunteer.registered_academic_year == current.AcademicYear and volunteer.registered_semester == current.Semester %}
+    {% if not volunteer.activity %}
+    <form method="POST" action="{% url 'allotactivity' %}">
+        {% csrf_token %}
+        <select id="activitySelect" class="activity-select" name="activity" required>
+            {% if activities %}
+            <option value="">Select an activity</option>
+            {% for activity in activities %}
+            <option value="{{activity}}">{{activity}}</option>
+            {% endfor %}
+            {% else %}
+            <option value="">No activities available</option>
+            {% endif %}
+        </select>
+        <button class="dashboard-btn" type="submit">Allot Activity</button>
+    </form>
+    {% else %}
+    <div>
+        <div class="alert alert-info" role="info">
+            <h3>You've chosen your activity as {{volunteer.activity}}!</h3>
+        </div>
+        
+    </div>
+    {% endif %}
+    {% else %}
+    <div>
+        <h3>You are not registered for the current academic year and semester.</h3>
+    </div>
+    {% endif %}
+</div>
+
+{% endblock vcontent %}

@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Certificate</title>
+    <link rel="icon" href="{% static 'auth/images/swdlogo.png' %}">
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.4.1/mdb.min.css" rel="stylesheet" />
+</head>
+<body>
+    <form action="{% url 'test-certificate' %}" method="POST" enctype="multipart/form-data" style="margin-top: 30px; margin-left: 30px">
+        {% include 'messages.html' %}
+        {% csrf_token %}
+        Upload a certificate to check its alignment (Only PDF's are compatible):
+        <br><br>
+        <input type="file" name="uploaded_name" required>
+        <br><br>
+        <input type="text" name="secret_code" required placeholder="Secret Code" /><br><br>
+        <div class="form-group">
+                {{ form.captcha }}
+            </div><br>
+        <input type="submit" class="btn btn-success" value="Submit">
+    </form>
+</body>
+</html>

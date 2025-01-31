@@ -1,0 +1,134 @@
+{% extends 'vdashboard.html' %}
+{% block vtitle %} Report Filling {% endblock vtitle %}
+{% block vcontent %}
+{% load static %}
+
+{% if not activity.report_filling %}
+<div class="alert alert-info" role="info">
+    Report filling is not yet open for {{volunteer.activity}}. We'll let you know when you've to come here.
+</div>
+{% endif %}
+
+{% if volunteer.submitted == 1 and volunteer.verified == 1 %}
+<div class="alert alert-success" role="alert">
+    Congratulations! Your report has been verified by {{volunteer.Cordinator}}. Your Activity Certificate and
+    responses of your Report have been mailed to you!
+</div>
+<p class="text-success">You can also download your certificate & report by clicking the buttons below.</p>
+<a href="{% url 'v-download-certificate' %}" class="btn btn-success">Download Certificate</a> &nbsp;
+<a href="{% url 'v-download-report' %}" class="btn btn-success">Download Report</a>
+{% endif %}
+
+{% if volunteer.submitted == 1 and volunteer.verified == 0 %}
+<div class="alert alert-success" role="success">
+    Hurray! Your report has been submitted. We'll let you know by mail as soon as it is verified by
+    {{volunteer.Cordinator}}.
+</div>
+{% endif %}
+
+
+{% if volunteer.submitted == 1 and volunteer.verified == 3 %}
+<p style="font-size:18px;">Dear {{volunteer.vname}}, you have been marked as <b style="color:red;">Failed</b> in the
+    Social Services Course.</p>
+<p style="font-size:18px;">The reason, as stated by your Coordinator/Activity Head is:<br>
+    "{{volunteer.rejection_reason}}"</p>
+{% endif %}
+
+{% if volunteer.submitted == 0 and volunteer.verified == 3 %}
+<p style="font-size:18px;">Dear {{volunteer.vname}}, you have been marked as <b style="color:red;">Failed</b> in the
+    Social Services Course.</p>
+<p style="font-size:18px;">The reason is: "{{volunteer.rejection_reason}}"</p>
+{% endif %}
+
+{% if activity.report_filling and volunteer.submitted == 0 and volunteer.verified == 0 and current.AcademicYear == volunteer.registered_academic_year and current.Semester == volunteer.registered_semester %}
+{% if volunteer.profile_edited == '' or volunteer.profile_edited == '.' %}
+<div class="alert alert-success" role="success">
+    Report filling is enabled for {{volunteer.activity}}. Please confirm your details <a
+        href="{% url 'vprofile' %}">here</a> and then you will be able to fill your report.
+</div>
+{% endif %}
+{% endif %}
+
+
+{% if volunteer.submitted == 0 and volunteer.verified == 0 and current.AcademicYear != volunteer.registered_academic_year and current.Semester != volunteer.registered_semester %}
+<div class="alert alert-danger">
+    <b>Report Filling is closed for the Academic Year {{volunteer.registered_academic_year}} Semester
+        {{volunteer.registered_semester}}.
+        You cannot submit your report now.</b>
+</div>
+{% endif %}
+
+{% if volunteer.submitted == 0 and volunteer.verified == 2 and current.AcademicYear != volunteer.registered_academic_year and current.Semester != volunteer.registered_semester %}
+<div class="alert alert-danger">
+    <b>Your report was rejected by {{volunteer.Cordinator}}. You did not submit your report again. You cannot submit
+        your report now as the Report Filling is closed for the Academic Year {{volunteer.registered_academic_year}}
+        Semester {{volunteer.registered_semester}}.</b>
+</div>
+{% endif %}
+
+{% if activity.report_filling and volunteer.Cordinator != '' and volunteer.Cordinator != '.' and volunteer.profile_edited != '' and volunteer.profile_edited != '.' and volunteer.submitted == 0 and volunteer.verified == 0 and current.AcademicYear == volunteer.registered_academic_year and current.Semester == volunteer.registered_semester %}
+<div id="instructionsContainer">
+    <hr>
+    <p style="font-size: 18px; font-weight: bold; margin-left: 28px;">Please agree and understand the Report Filling
+        Procedure</p>
+    <ul>
+        <div class="form-check form-check-inline" style="font-size: 17px; margin-bottom: 20px;">
+            <input class="form-check-input" type="checkbox" id="condition1" style="padding: 7px;">
+            <label class="form-check-label">&nbsp;You will be asked 6 questions regarding {{volunteer.activity}}. Each
+                answer to each question must be atleast 700 characters long.</label>
+        </div><br>
+        <div class="form-check form-check-inline" style="font-size: 17px; margin-bottom: 20px;">
+            <input class="form-check-input" type="checkbox" id="condition2" style="padding: 7px;">
+            <label class="form-check-label">&nbsp;Write your <b>own answers</b> as they will be scanned by our
+                <b>Plagarism Detection Software</b>.</label>
+        </div><br>
+        <div class="form-check form-check-inline" style="font-size: 17px; margin-bottom: 20px;">
+            <input class="form-check-input" type="checkbox" id="condition3" style="padding: 7px;">
+            <label class="form-check-label">&nbsp;However, your report will be checked manually by
+                <b>{{volunteer.Cordinator}}</b> also.</label>
+        </div><br>
+        <div class="form-check form-check-inline" style="font-size: 17px; margin-bottom: 20px;">
+            <input class="form-check-input" type="checkbox" id="condition4" style="padding: 7px;">
+            <label class="form-check-label">&nbsp;Type all answers within 250 minutes, else your session will expire,
+                you'll be signed out and you will have to type all the answers again.</label>
+        </div><br>
+        <div class="form-check form-check-inline" style="font-size: 17px; margin-bottom: 20px;">
+            <input class="form-check-input" type="checkbox" id="condition5" style="padding: 7px;">
+            <label class="form-check-label">&nbsp;The <b>Submit</b> button will be enabled only after you write atleast
+                700 characters for each question.</label>
+        </div><br>
+        <div class="form-check form-check-inline" style="font-size: 17px; margin-bottom: 20px;">
+            <input class="form-check-input" type="checkbox" id="condition6" style="padding: 7px;">
+            <label class="form-check-label">&nbsp;Make sure you are aware who your Guardian Faculty is, as you will have
+                to choose your Guardian Faculty from a dropdown list before submitting your report.</label>
+        </div>
+
+
+    </ul>
+    <button class="btn btn-success" id="proceedBtn" disabled style="margin-bottom: 25px;">
+        Proceed to Report Filling
+    </button>
+    <div style="display: flex; align-items: center; margin-bottom: 35px;">
+        <div class="spinner-border text-success" id="loader" style="display: none;height:25px; width:25px;"></div>
+        <div style="color:green; display:none; font-size: 16px; margin-left: 10px; margin-top: 15px; padding-bottom: 15px;"
+            id="proceedMessage"></div>
+    </div>
+</div>
+<script src="{% static 'dashboard/js/proceedToReportFilling.js' %}"></script>
+{% endif %}
+
+
+
+{% if volunteer.submitted == 0 and volunteer.verified == 2 and current.AcademicYear == volunteer.registered_academic_year and current.Semester == volunteer.registered_semester %}
+<div class="alert alert-danger" role="alert">
+    Your report was rejected by {{volunteer.Cordinator}}. The reason, as stated by your Coordinator, is :
+    "{{volunteer.rejection_reason}}"
+</div>
+<a href="{% url 'rejected-report-filling' %}"><button class="btn btn-primary btn-sm">Click here to edit and re-submit your report</button></a>
+{% endif %}
+
+
+</div>
+<script src="{% static 'dashboard/js/index.js' %}"></script>
+
+{% endblock vcontent %}

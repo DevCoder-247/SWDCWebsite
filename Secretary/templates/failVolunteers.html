@@ -1,0 +1,73 @@
+{% extends 'sdashboard.html' %}
+{% block stitle %} Fail Volunteers {% endblock stitle %}
+{% block scontent %}
+{% load static %}
+
+{% if activity.report_filling %}
+{% if volunteers %}
+<div class="form-group">
+    <label for="s"><p>Select a volunteer to fail</p></label>
+    <select class="form-control" id="s">
+        <option value="Choose">Choose...</option>
+        {% for v in volunteers %}
+        <option value="{{v.vname}}">{{v.vname}}</option>
+        {% endfor %}
+    </select>
+</div>
+<div id="container" style="display: none;">
+    <p style="font-size: 17px; font-weight: bold; margin-bottom: 0px;">Enter reason for failing <span id="vName"></span>
+    </p>
+    <small>Enter atleast 30 characters.</small>
+
+    <form action="{% url 'fail-volunteers' %}" method="POST" id="myForm">
+        {% csrf_token %}
+        <div class="form-group">
+            <textarea class="form-control" name="reason" rows="3" required id="reason" placeholder="This will be mailed to the volunteer."></textarea>
+        </div>
+        <input type="hidden" name="name" id="name">
+        <small style="color: red; display: none; margin-top: 0px; margin-bottom: 5px;" id="error">Enter atleast 30 characters.</small>
+    </form>
+    <input type="submit" class="btn btn-danger" id="btn" value="Confirm Failure in Course">
+</div>
+<script>
+    const s = document.getElementById('s');
+    const container = document.getElementById('container');
+    const myForm = document.getElementById('myForm');
+    const name = document.getElementById('name');
+    const reason = document.getElementById('reason');
+    const vName = document.getElementById('vName');
+    const btn = document.getElementById('btn');
+    const error = document.getElementById('error');
+    s.addEventListener('change', function (e) {
+        if(s.value === 'Choose')
+        {
+            container.style.display = 'none';
+        }
+        else
+        {
+            vName.innerHTML = s.value;
+            name.value = s.value;
+            reason.value = "";
+            container.style.display = 'block';
+        }
+    });
+    btn.addEventListener('click', function () {
+        if (reason.value.length > 30) {
+            myForm.submit();
+        }
+        else {
+            error.style.display = 'block';
+        }
+    });
+</script>
+{% else %}
+<div class="alert alert-success" role="success">
+There are no volunteers to fail. All have either passed or have been failed earlier.
+</div>
+{% endif %}
+{% else %}
+<div class="alert alert-danger" role="danger">
+    Failing volunteers is currently disabled as report filling for {{activity.name}} has not yet started
+</div>
+{% endif %}
+{% endblock scontent %}

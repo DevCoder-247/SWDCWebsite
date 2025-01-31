@@ -1,0 +1,279 @@
+{% extends 'vdashboard.html' %}
+{% block vtitle %} Profile {% endblock vtitle %}
+{% block vcontent %}
+{% load static %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css">
+<style>
+    .loader {
+        border: 4px solid rgba(255, 255, 255, 0.3);
+        border-top: 4px solid #007bff;
+        border-radius: 50%;
+        width: 25px;
+        height: 25px;
+        animation: spin 1s linear infinite;
+        display: none;
+    }
+
+    @keyframes spin {
+        0% {
+            transform: rotate(0deg);
+        }
+
+        100% {
+            transform: rotate(360deg);
+        }
+    }
+</style>
+{% if volunteer.profile_edited != '' and volunteer.profile_edited != '.' %}
+<div style="display: flex;">
+    <i class="bi bi-check green-color" style="font-size: 30px; stroke-width: 2px; color:green"></i>
+    <p style="color: green; margin-top: 6px;">Your profile was updated by you on {{volunteer.profile_edited}}. You
+        cannot update it again.
+    </p>
+</div>
+{% endif %}
+<h3 style="margin-left: 20px;">My Profile</h3>
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-6">
+            {% if volunteer.profile_edited == '' or volunteer.profile_edited == '.'%}
+            <form action="{% url 'vprofile' %}" method="POST" id="profileForm">
+                {% csrf_token %}
+                <div class="form-group row">
+                    <label for="name" class="col-sm-2 col-form-label">Name</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" id="name" name="vname" value="{{volunteer.vname}}">
+                        <small style="color: green;">This is the name that will appear on your certificate.</small>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label for="prn" class="col-sm-2 col-form-label">PRN</label>
+                    <div class="col-sm-10">
+                        <input type="number" class="form-control" id="prn" name="prn" value="{{volunteer.prn}}">
+                        <small style="color: red; display: none;" id="prnerror">Enter your PRN of 8 digits.</small>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label for="contact_num" class="col-sm-2 col-form-label">My Number</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" id="contact_num" name="contact_num"
+                            value="{{volunteer.contact_num}}">
+                        <small style="color: red; display: none;" id="contact_num_error">Enter correct contact number of
+                            10 digits.</small>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label for="parent_num" class="col-sm-2 col-form-label">Parent's Number</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" id="parent_num" name="parent_num"
+                            value="{{volunteer.parent_num}}">
+                        <small style="color: red; display: none;" id="parent_num_error">Enter correct contact number of
+                            10 digits.</small>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label for="gender" class="col-sm-2 col-form-label">Gender</label>
+                    <div class="col-sm-10">
+                        <select class="custom-select mr-sm-2" name="gender" id="gender">
+                            <option selected value="{{volunteer.gender}}">{{volunteer.gender}}</option>
+                            {% if volunteer.gender == 'Female' %}
+                            <option value="Male">Male</option>
+                            {% else %}
+                            <option value="Female">Female</option>
+                            {% endif %}
+
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label for="blood_group" class="col-sm-2 col-form-label">Blood Group</label>
+                    <div class="col-sm-10">
+                        <select class="custom-select mr-sm-2" name="blood_group" id="blood_group">
+                            <option selected value="{{volunteer.blood_group}}">{{volunteer.blood_group}}</option>
+                            <option value="A +ve">A +ve</option>
+                            <option value="A -ve">A -ve</option>
+                            <option value="B +ve">B +ve</option>
+                            <option value="B -ve">B -ve</option>
+                            <option value="AB +ve">AB +ve</option>
+                            <option value="AB -ve">AB -ve</option>
+                            <option value="O +ve">O +ve</option>
+                            <option value="O -ve">O -ve</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label for="div" class="col-sm-2 col-form-label">Division</label>
+                    <div class="col-sm-10">
+                        <select class="custom-select mr-sm-2" name="div" id="div">
+                            <option selected value="{{volunteer.div}}">{{volunteer.div}}</option>
+                            <option value="A">A</option>
+                                    <option value="B">B</option>
+                                    <option value="C">C</option>
+                                    <option value="D">D</option>
+                                    <option value="E">E</option>
+                                    <option value="F">F</option>
+                                    <option value="G">G</option>
+                                    <option value="H">H</option>
+                                    <option value="I">I</option>
+                                    <option value="J">J</option>
+                                    <option value="K">K</option>
+                                    <option value="L">L</option>
+                                    <option value="M">M</option>
+                                    <option value="N">N</option>
+                                    <option value="O">O</option>
+                                    <option value="P">P</option>
+                                    <option value="Q">Q</option>
+                                    <option value="R">R</option>
+                                    <option value="S">S</option>
+                                    <option value="T">T</option>
+                                    <option value="U">U</option>
+                                    <option value="V">V</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label for="current_add" class="col-sm-2 col-form-label">Current Address</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" id="current_add" name="current_add"
+                            value="{{volunteer.current_add}}">
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <label for="activity" class="col-sm-2 col-form-label">Activity</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" id="activity" value="{{volunteer.activity}}" disabled>
+                        <small style="color: green;">Your activity cannot be changed.</small>
+                    </div>
+                </div>
+
+            </form>
+            <div class="form-group row">
+                <div class="form-check form-check-inline" style="margin-left: 20px; margin-bottom: 20px;">
+                    <input class="form-check-input" type="checkbox" id="profileCheckbox1" style="width: 16px;">
+                    <label class="form-check-label" for="profileCheckbox1"><b>&nbsp; I confirm that my email is {{volunteer.email}}</b></label>
+                </div>
+                <div class="form-check form-check-inline" style="margin-left: 20px; margin-bottom: 20px;">
+                    <input class="form-check-input" type="checkbox" id="profileCheckbox2" style="width: 23px;">
+                    <label class="form-check-label" for="profileCheckbox2"><b>&nbsp; I understand that I can update my
+                            profile only once. Changing my profile once again will not be possible.</b></label>
+                </div>
+                <div class="form-check form-check-inline" style="margin-left: 20px; margin-bottom: 20px;">
+                    <input class="form-check-input" type="checkbox" id="profileCheckbox3" style="width: 23px;">
+                    <label class="form-check-label" for="profileCheckbox3"><b>&nbsp; I understand that the above details
+                            will appear on my certificate and report upon completion of the course.</b></label>
+                </div>
+                <div class="col-sm-10">
+                    <button class="btn btn-success" id="submitBtn" disabled>Confirm Profile</button>
+                </div>
+            </div>
+            {% else %}
+            <form>
+                <div class="form-group row">
+                    <label for="name" class="col-sm-2 col-form-label">Name</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" id="name" value="{{volunteer.vname}}" disabled>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label for="prn" class="col-sm-2 col-form-label">PRN</label>
+                    <div class="col-sm-10">
+                        <input type="number" class="form-control" id="prn" value="{{volunteer.prn}}" disabled>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label for="contact_num" class="col-sm-2 col-form-label">My Number</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" id="contact_num" value="{{volunteer.contact_num}}"
+                            disabled>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label for="parent_num" class="col-sm-2 col-form-label">Parent's Number</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" id="parent_num" value="{{volunteer.parent_num}}"
+                            disabled>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label for="gender" class="col-sm-2 col-form-label">Gender</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" id="gender" value="{{volunteer.gender}}" disabled>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label for="blood_group" class="col-sm-2 col-form-label">Blood Group</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" id="blood_group" value="{{volunteer.blood_group}}"
+                            disabled>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label for="div" class="col-sm-2 col-form-label">Division</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" id="div" value="{{volunteer.div}}" disabled>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label for="current_add" class="col-sm-2 col-form-label">Current Address</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" id="current_add" value="{{volunteer.current_add}}"
+                            disabled>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label for="email" class="col-sm-2 col-form-label">Email</label>
+                    <div class="col-sm-10">
+                        <input type="email" class="form-control" id="email" value="{{volunteer.email}}" disabled>
+                    </div>
+                </div>
+
+
+                <div class="form-group row">
+                    <label for="activity" class="col-sm-2 col-form-label">Activity</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" id="activity" value="{{volunteer.activity}}" disabled>
+                    </div>
+                </div>
+
+            </form>
+            {% endif %}
+
+        </div>
+        <div class="col-md-6">
+            <br>
+            <h5>Change Your Password</h5>
+            <form action="{% url 'vresetpass' %}" method="POST">
+                {% csrf_token %}
+                <div class="form-group row">
+                    <div class="col-sm-10">
+                        <input type="password" class="form-control" id="password" name="password"
+                            placeholder="Enter a new password">
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-success">Update Password</button>
+            </form>
+            <br>
+            <br>
+            <h5>Change Email Address</h5>
+            <small style="color: green; font-size: 15px">Your current email address is {{volunteer.email}}</small>
+            <form action="{% url 'v-request-to-update-email' %}" method="POST">
+                {% csrf_token %}
+                <div class="form-group row">
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" id="email" name="email"
+                            placeholder="Type a new email address" required
+                            pattern="^[a-zA-Z0-9]+.[a-zA-Z0-9]+@vit\.edu$"
+                            title="Email address must be in the form of firstname.lastname+year@vit.edu">
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-success">Update Email</button>
+            </form>
+            <br>
+        </div>
+    </div>
+</div>
+<br>
+<script src="{% static 'dashboard/js/volunteer_profile.js' %}"></script>
+{% endblock vcontent %}

@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Allot Coordinators</title>
+    <link rel="icon" href="{% static 'auth/images/swdlogo.png' %}">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.4.1/mdb.min.css" rel="stylesheet" />
+</head>
+
+<body>
+    <form action="{% url 'allot-coords-by-sheet' %}" method="POST" enctype="multipart/form-data" style="margin-top: 30px; margin-left: 30px" id="myForm">
+        <p>You should only enter the Coordinators' name in the <b>Coordinator</b> column and should not make any other changes to the sheet like changing the order of columns, changing the font style, etc.</p>
+        <p>Once you've entered the Coordiantors' names, then you can upload the sheet below.</p>
+        {% include 'messages.html' %}
+        {% csrf_token %}
+        <input type="file" name="file" required>
+        <br><br>
+        <input type="text" name="secret_code" placeholder="Secret Code" required /><br><br>
+        <div class="form-group">
+            {{ form.captcha }}
+        </div><br>
+        <input type="submit" class="btn btn-success" value="Submit" id="btn">
+        <br>
+        <br>
+        <br>
+        <div style="display: flex; display: none;" id="pleaseWait">
+            <div class="spinner-border text-success spinner-border-sm" role="status" style="margin-top: 5px;"></div>
+            <p style="margin-left: 5px; margin-bottom: 15px;">This may take a few minutes. Please wait...</p>
+        </div>
+    </form>
+    <script>
+        const btn = document.getElementById('btn');
+        const myForm = document.getElementById('myForm');
+        const pleaseWait = document.getElementById('pleaseWait');
+        myForm.addEventListener('submit', function(){
+            btn.style.display = 'none';
+            pleaseWait.style.display = 'flex';
+        })
+    </script>
+</body>
+
+</html>

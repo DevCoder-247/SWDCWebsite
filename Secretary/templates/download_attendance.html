@@ -1,0 +1,35 @@
+{% extends 'sdashboard.html' %}
+{% block stitle %} {{secretary.activity}}'s Team {% endblock stitle %}
+{% block scontent %}
+
+<div class="content-section" style="margin-top:5%">
+    <form method="POST" action="{% url 'download_attendance' %}">
+        {% csrf_token %}
+        <div class="dashboard-item">
+            <h2 style="font-weight: bold; font-size: 19px;">Download Attendance</h2>
+            <select id="event-name" class="activity-select" name="event-name" style=" max-width: 80%;" required>
+                {% if secretary.registered_academic_year == current.AcademicYear and secretary.registered_semester == current.Semester %}
+                {% if secretary.activity or secretary.flagshipEvent %}
+                <option value="">Select an activity</option>
+                {% if secretary.activity %}
+                <option value="{{ secretary.activity }}">{{ secretary.activity }}</option>
+                {% endif %}
+                {% if secretary.flagshipEvent %}
+                <option value="{{ secretary.flagshipEvent }}">{{ secretary.flagshipEvent }}
+                </option>
+                {% endif %}
+                {% else %}
+                <option value="">No activities to select</option>
+                {% endif %}
+                {% else %}
+                <option value="">No activities to select</option>
+                {% endif %}
+            </select>
+        </div>
+        <div class="dashboard-item">
+            <button type="submit" style="max-width: 80%; font-size: 19px;">Download</button>
+        </div>
+    </form>
+</div>
+
+{% endblock scontent %}

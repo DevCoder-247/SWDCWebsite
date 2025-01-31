@@ -1,0 +1,76 @@
+{% extends 'vdashboard.html' %}
+{% block vtitle %} View Attendance {% endblock vtitle %}
+{% block vcontent %}
+{% load static %}
+
+
+<div id="viewAttendance" class="container">
+    {% if volunteer.registered_academic_year == current.AcademicYear and volunteer.registered_semester == current.Semester %}
+    {% if volunteer.activity%}
+    <h2>Attendance Record</h2>
+    <br><br>
+    <button id="viewAttendanceTab">View Attendance</button>
+    <br><br><br>
+    <table>
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody id="attendanceTableBody">
+            <!-- Attendance data will be populated here -->
+        </tbody>
+    </table>
+    {% else %}
+    <div>
+        <p>You haven't chosen or attended any activity.</p>
+    </div>
+    {% endif %}
+    {% else %}
+    <div>
+        <p>You are not registered for the current academic year and semester.</p>
+    </div>
+    {% endif %}
+</div>
+
+
+<script>
+    document.getElementById('viewAttendanceTab').addEventListener('click', function () {
+        fetch('/v/fetch_attendance')
+            .then(response => response.json())
+            .then(data => {
+                const attendanceTableBody = document.getElementById('attendanceTableBody');
+                attendanceTableBody.innerHTML = '';  // Clear previous data
+
+                data.attendance.forEach(entry => {
+                    const row = document.createElement('tr');
+                    const dateCell = document.createElement('td');
+                    const statusCell = document.createElement('td');
+
+                    dateCell.textContent = entry.date;  // dd-mm-yyyy
+                    statusCell.textContent = entry.status; // Present or Absent
+
+                    if (entry.status == 'Present') {
+                        statusCell.style.color = 'green';
+                    }
+                    else if (entry.status == 'In-Attendance Marked') {
+                        statusCell.style.color = 'blue';
+                    }
+                    else {
+                        statusCell.style.color = 'red';
+                    }
+
+                    row.appendChild(dateCell);
+                    row.appendChild(statusCell);
+                    attendanceTableBody.appendChild(row);
+                });
+
+                // Show the attendance section
+                document.getElementById('viewAttendance').classList.remove('hidden');
+            })
+            .catch(error => console.error('Error fetching attendance data:', error));
+    });
+
+</script>
+{% endblock vcontent %}

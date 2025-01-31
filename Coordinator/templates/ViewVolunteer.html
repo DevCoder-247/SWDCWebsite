@@ -1,0 +1,205 @@
+{% extends 'cdashboard.html' %}
+{% block ctitle %} Viewing {{volunteer.vname}} {% endblock ctitle %}
+{% block ccontent %}
+{% load static %}
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href='{% static "css/style.css" %}'>
+    <title> View Volunteer</title>
+    <style>
+        #rejForm,
+        #failForm,
+        #approveConfirmContainer {
+            display: none;
+
+            border: 6px solid #91aa4c;
+            padding: 2em;
+            width: 600px;
+            text-align: center;
+            background: #fff;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            -webkit-transform: translate(-50%, -50%)
+        }
+
+        input,
+        textarea {
+            margin: .8em auto;
+            font-size: 14px;
+            display: block;
+            width: 450px;
+            padding: .4em;
+        }
+
+        textarea {
+            height: 80px;
+            resize: none;
+        }
+
+        .formBtn {
+            width: 140px;
+            display: inline-block;
+
+            background: red;
+            color: #fff;
+            font-weight: 100;
+            font-size: 1.5em;
+            padding-bottom: 10px;
+            border: none;
+            height: 30px;
+        }
+
+        .blocker {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            right: 0;
+            content: ' ';
+            background: rgba(0, 0, 0, .5);
+        }
+    </style>
+</head>
+
+<body>
+
+
+
+    <h4>Report submitted by {{volunteer.vname}}</h4>
+    {% if activity.report_verification == False %}
+    <p style="color:red;">Report Verification for {{volunteer.activity}} is not yet enabled. So, while you can view this
+        report, you cannot verify / reject it.</p>
+    {% endif %}
+    <fieldset>
+        <br>
+        <div class="form-outline mb-4">
+            <label class="form-label" for="ans1"><b>Objective of the Activity</b></label>
+            <textarea name="quest1" class="form-control" id="ans1" rows="8" disabled style="height: 250px;">{{volunteer.ans1}}</textarea>
+        </div>
+
+        <div class="form-outline mb-4">
+            <label class="form-label" for="ans2"><b>Description of the Activity</b></label>
+            <textarea name="quest2" class="form-control" id="ans2" rows="8" disabled style="height: 250px;">{{volunteer.ans2}}</textarea>
+        </div>
+
+        <div class="form-outline mb-4">
+            <label class="form-label" for="ans3"><b>Benefits to Society</b></label>
+            <textarea name="quest3" class="form-control" id="ans3" rows="8" disabled style="height: 250px;">{{volunteer.ans3}}</textarea>
+        </div>
+
+        <div class="form-outline mb-4">
+            <label class="form-label" for="ans4"><b>Benefits to Self</b></label>
+            <textarea name="quest4" class="form-control" id="ans4" rows="8" disabled style="height: 250px;">{{volunteer.ans4}}</textarea>
+        </div>
+
+        <div class="form-outline mb-4">
+            <label class="form-label" for="ans5"><b>Learning, Experiences, challenges</b></label>
+            <textarea name="quest5" class="form-control" id="ans5" rows="8" disabled style="height: 250px;">{{volunteer.ans5}}</textarea>
+        </div>
+
+        <div class="form-outline mb-4">
+            <label class="form-label" for="ans6"><b>How did it help you to shape your Empathy</b></label>
+            <textarea name="quest6" class="form-control" id="ans6" rows="8" disabled style="height: 250px;">{{volunteer.ans6}}</textarea>
+        </div>
+
+        <div class="form-outline mb-4">
+            <label class="form-label" for="urlID">Drive link: </label>
+            <a href="{{volunteer.url}}" target="_blank" id="urlID">{{volunteer.url}}</a>
+        </div>
+
+        <div class="form-outline mb-4">
+            <label class="form-label" for="Guardian_Faculty"><b>Guardian Faculty</b></label><br>
+            <p id="Guardian_Faculty">{{volunteer.guardian_faculty}}</p>
+        </div>
+    </fieldset>
+
+
+    {% if activity.report_verification == True %}
+    <div style="display: flex; justify-content: center;">
+        <div class="spinner-border text-success" style="display: none; width: 25px; height: 25px;" id="loader">
+            <span class="sr-only"></span>
+        </div>
+        <span style="display: none; color: green; margin-bottom: 50px" id="approveText"></span>
+    </div>
+
+    <div style="display: flex; justify-content: space-between; padding-bottom: 30px;" class="options-container">
+        <button class="btn btn-success mb-4" style="width: 100px; height: 40px;" id="approveBtn">Approve</button>
+
+        <button type="submit" class="btn btn-warning mb-4" style="margin-top: 10px; color:black;  width: 100px; height: 40px;" id="rejectBtn">Reject</button>
+
+        <button type="submit" class="btn btn-danger mb-4" style="height: 40px; width: 100px; margin-top: 10px;" id="failBtn">Fail</button>
+    </div>
+
+    <div class="blocker" id="blocker"></div>
+
+    <div id="approveConfirmContainer">
+        <h5><b>Are you sure?</b></h5>
+        <small><b>The volunteer will be passed in this course and will be mailed the activity certificate & report.</b></small>
+        <br><br>
+        <form action="{% url 'ApproveVolunteer' %}" style="padding-bottom: 2px;" method="POST" id="ApproveForm">
+            {% csrf_token %}
+            <input type="hidden" name="email" value="{{volunteer.email}}">
+            <div style="text-align: left;" class="form-check form-check-inline">
+                <input type="checkbox" class="form-check-input" id="chk1" style="margin-top: 15px; border: 2px solid black;">
+                <label for="chk1" class="form-check-label" style="margin-left: 4px;">I have read {{volunteer.vname}}'s report throughly and found it to be acceptable with no erroneous information.</label>
+            </div>
+            <br><br>
+            <div style="text-align: left;" class="form-check form-check-inline">
+                <input type="checkbox" class="form-check-input" id="chk2" style="margin-top: 15px; border: 2px solid black;">
+                <label for="chk2" class="form-check-label" style="margin-left: 4px;">{{volunteer.vname}} has actively participated in {{volunteer.activity}} and has been passed in the Social Services Course by the Activity Heads.</label>
+            </div>
+            <br><br>
+            <div class="form-group">
+                {{ form.captcha }}
+            </div>
+            <input class="btn btn-success mb-1" type="submit" value="Approve Report" id="approveConfirmBtn" disabled><br>
+            <small style="color: red;"><b>This action is irreversible!!</b></small>
+        </form>
+    </div>
+
+
+    <div id="rejForm">
+        <h5>Enter detailed reason for rejecting Report</h5>
+        <small>This will be mailed to {{volunteer.vname}}</small>
+        <form action="{% url 'rejectVolunteer' %}" style="padding-bottom: 2px;" method="POST" id="confirmrejectionForm">
+            {% csrf_token %}
+            <input type="hidden" name="email" value="{{volunteer.email}}">
+            <textarea name="rejection_reason"
+                placeholder="Volunteer will be asked to edit report as mentioned by you here." required></textarea>
+            <input class="btn btn sub-btn btn-block mb-4" style="background-color: red;" type="submit" value="Confirm Rejection" id="confirmrejectionBtn" />
+            <div style="display: flex; justify-content: center;">
+                <div class="spinner-border text-success" style="display: none; width: 25px; height: 25px;" id="rejectLoader">
+                    <span class="sr-only"></span>
+                </div>
+                <span style="display: none; color: green; margin-bottom: 40px" id="rejectText">&nbsp; &nbsp;Sending mail...</span>
+            </div>
+        </form>
+    </div>
+
+    <div id="failForm">
+        <h5>Enter detailed reason for failing the Volunteer</h5>
+        <form action="{% url 'fail-volunteer' %}" style="padding-bottom: 2px;" method="POST" id="confirmfailForm">
+            {% csrf_token %}
+            <input type="hidden" name="email" value="{{volunteer.email}}">
+            <textarea name="fail_reason"
+                placeholder="This will be mailed to {{volunteer.vname}}. They cannot fill report again."
+                required></textarea>
+            <input class="btn btn sub-btn btn-block mb-4" style="background-color: red;" type="submit" value="Confirm Failure in Course" id="confirmfailBtn" />
+            <div style="display: flex; justify-content: center;">
+                <div class="spinner-border text-success" style="display: none; width: 25px; height: 25px;" id="failLoader">
+                    <span class="sr-only"></span>
+                </div>
+                <span style="display: none; color: green; margin-bottom: 40px" id="failText">&nbsp; &nbsp;Sending mail...</span>
+            </div>
+        </form>
+    </div>
+
+    {% endif %}
+    <script src="{% static 'dashboard/js/view_volunteer.js' %}"></script>
+</body>
+{% endblock ccontent %}

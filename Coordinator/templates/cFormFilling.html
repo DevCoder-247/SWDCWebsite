@@ -1,0 +1,258 @@
+{% extends 'cdashboard.html' %} 
+{% block ctitle %} Form Filling {% endblock ctitle %}
+{% block ccontent %} 
+{% if coordinator.submitted == 1 %} 
+{% if coordinator.verified == 0 or coordinator.verified == 2%}
+<div class="alert alert-success" role="alert">
+  Your form has been submitted. It is yet to be verified by Secretary
+  {{coordinator.Secretary}}
+</div>
+<form>
+  <h4 class="text-center">Your responses are</h4>
+
+  <div class="form-outline mb-4">
+    <label class="form-label" for="form6Example7">Objective of the Activity (Minimum 50 Words)</label>
+    <textarea name="quest1" class="form-control" id="form6Example7" rows="4" disabled>
+{{coordinator.ans1}}</textarea>
+  </div>
+
+  <div class="form-outline mb-4">
+    <label class="form-label" for="form6Example7">Description of the Activity (Minimum 100 words)</label>
+    <textarea name="quest2" class="form-control" id="form6Example7" rows="4" disabled>
+{{coordinator.ans2}}</textarea>
+  </div>
+
+  <div class="form-outline mb-4">
+    <label class="form-label" for="form6Example7">Benefits to Society (Minimum 100 words)</label>
+    <textarea name="quest3" class="form-control" id="form6Example7" rows="4" disabled>
+{{coordinator.ans3}}</textarea>
+  </div>
+
+  <div class="form-outline mb-4">
+    <label class="form-label" for="form6Example7">Benefits to Self (Minimum 100 Words)</label>
+    <textarea name="quest4" class="form-control" id="form6Example7" rows="4" disabled>
+{{coordinator.ans4}}</textarea>
+  </div>
+
+  <div class="form-outline mb-4">
+    <label class="form-label" for="form6Example7">Learning, Experiences, challenges that you want to share (Minimum 100
+      words)</label>
+    <textarea name="quest5" class="form-control" id="form6Example7" rows="4" disabled>
+{{coordinator.ans5}}</textarea>
+  </div>
+
+  <div class="form-outline mb-4">
+    <label class="form-label" for="form6Example7">How did it help you to shape your Empathy (Minimum 50 words)</label>
+    <textarea name="quest6" class="form-control" id="form6Example7" rows="4" disabled>
+{{coordinator.ans6}}</textarea>
+  </div>
+
+  <div class="form-outline mb-4">
+    <label class="form-label" for="form6Example7">Drive link</label>
+    <textarea name="quest7" class="form-control" id="form6Example7" rows="4" disabled>
+{{coordinator.url}}</textarea>
+  </div>
+
+  <div class="input-group mb-3">
+    <div class="input-group-prepend">
+      <label class="input-group-text" for="inputGroupSelect01">Secretary name</label>
+    </div>
+    <select class="custom-select" id="inputGroupSelect01">
+      <option disabled selected value>{{coordinator.Secretary}}</option>
+    </select>
+  </div>
+</form>
+{% endif %} 
+{% endif %}
+
+
+{% if coordinator.submitted == 1 and coordinator.verified == 1 %}
+<div class="alert alert-success" role="alert">
+  Congratulations!! Your form has been verified by Secretary
+  {{coordinator.Secretary}}
+</div>
+<form>
+  <h4 class="text-center">Your responses are</h4>
+
+  <div class="form-outline mb-4">
+    <label class="form-label" for="form6Example7">Objective of the Activity (Minimum 50 Words)</label>
+    <textarea name="quest1" class="form-control" id="form6Example7" rows="4" disabled>
+{{coordinator.ans1}}</textarea>
+  </div>
+
+  <div class="form-outline mb-4">
+    <label class="form-label" for="form6Example7">Description of the Activity (Minimum 100 words)</label>
+    <textarea name="quest2" class="form-control" id="form6Example7" rows="4" disabled>
+{{coordinator.ans2}}</textarea>
+  </div>
+
+  <div class="form-outline mb-4">
+    <label class="form-label" for="form6Example7">Benefits to Society (Minimum 100 words)</label>
+    <textarea name="quest3" class="form-control" id="form6Example7" rows="4" disabled>
+{{coordinator.ans3}}</textarea>
+  </div>
+
+  <div class="form-outline mb-4">
+    <label class="form-label" for="form6Example7">Benefits to Self (Minimum 100 Words)</label>
+    <textarea name="quest4" class="form-control" id="form6Example7" rows="4" disabled>
+{{coordinator.ans4}}</textarea>
+  </div>
+
+  <div class="form-outline mb-4">
+    <label class="form-label" for="form6Example7">Learning, Experiences, challenges that you want to share (Minimum 100
+      words)</label>
+    <textarea name="quest5" class="form-control" id="form6Example7" rows="4" disabled>
+{{coordinator.ans5}}</textarea>
+  </div>
+
+  <div class="form-outline mb-4">
+    <label class="form-label" for="form6Example7">How did it help you to shape your Empathy (Minimum 50 words)</label>
+    <textarea name="quest6" class="form-control" id="form6Example7" rows="4" disabled>
+{{coordinator.ans6}}</textarea>
+  </div>
+
+  <div class="form-outline mb-4">
+    <label class="form-label" for="form6Example7">Drive link</label>
+    <textarea name="quest7" class="form-control" id="form6Example7" rows="4" disabled>
+{{coordinator.url}}</textarea>
+  </div>
+
+  <div class="input-group mb-3">
+    <div class="input-group-prepend">
+      <label class="input-group-text" for="inputGroupSelect01">Secretary name</label>
+    </div>
+    <select class="custom-select" id="inputGroupSelect01">
+      <option disabled selected value>{{coordinator.Secretary}}</option>
+    </select>
+  </div>
+</form>
+{% endif %}
+
+
+{% if coordinator.submitted == 0 and coordinator.verified == 0 %}
+
+<form action="{% url 'cFormFilling' %}" class="needs-validation" method="post" novalidate>
+  {% csrf_token %}
+
+  <h4 class="text-center">Coordinator Report Filling</h4>
+
+  <div class="form-outline mb-4">
+    <label class="form-label" for="form6Example7">Objective of the Activity (Minimum 50 Words)</label>
+    <textarea name="quest1" class="form-control" id="form6Example7" rows="4" minlength="300" required></textarea>
+    <div class="invalid-feedback">Atleast 50 words required.</div>
+  </div>
+
+  <div class="form-outline mb-4">
+    <label class="form-label" for="form6Example7">Description of the Activity (Minimum 100 words)</label>
+    <textarea name="quest2" class="form-control" id="form6Example7" rows="4" minlength="600" required></textarea>
+    <div class="invalid-feedback">Atleast 100 words required.</div>
+  </div>
+
+  <div class="form-outline mb-4">
+    <label class="form-label" for="form6Example7">Benefits to Society (Minimum 100 words)</label>
+    <textarea name="quest3" class="form-control" id="form6Example7" rows="4" minlength="600" required></textarea>
+    <div class="invalid-feedback">Atleast 100 words required.</div>
+  </div>
+
+  <div class="form-outline mb-4">
+    <label class="form-label" for="form6Example7">Benefits to Self (Minimum 100 Words)</label>
+    <textarea name="quest4" class="form-control" id="form6Example7" rows="4" minlength="600" required></textarea>
+    <div class="invalid-feedback">Atleast 100 words required.</div>
+  </div>
+
+  <div class="form-outline mb-4">
+    <label class="form-label" for="form6Example7">Learning, Experiences, challenges that you want to share (Minimum 100
+      words)</label>
+    <textarea name="quest5" class="form-control" id="form6Example7" rows="4" minlength="600" required></textarea>
+    <div class="invalid-feedback">Atleast 100 words required.</div>
+  </div>
+
+  <div class="form-outline mb-4">
+    <label class="form-label" for="form6Example7">How did it help you to shape your Empathy (Minimum 50 words)</label>
+    <textarea name="quest6" class="form-control" id="form6Example7" rows="4" minlength="300" required></textarea>
+    <div class="invalid-feedback">Atleast 50 words required.</div>
+  </div>
+
+  <div class="form-outline mb-4">
+    <label class="form-label" for="form6Example7">Enter your drive link</label>
+    <textarea name="quest7" class="form-control" id="form6Example7" rows="4" required></textarea>
+  </div>
+
+  <div class="input-group mb-3">
+    <div class="input-group-prepend">
+      <label class="input-group-text" for="inputGroupSelect01">Select your Secretary name</label>
+    </div>
+    <select name="Secretary" class="custom-select" id="inputGroupSelect01" required>
+      <option disabled selected value>Choose...</option>
+      {% for secretary in secretaries %}
+      <option value="{{secretary.sname}}">{{secretary.sname}}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <button type="submit" class="btn btn sub-btn btn-block mb-4">Submit</button>
+</form>
+
+{% endif %}
+{% if coordinator.submitted == 0 and coordinator.verified == 2 %}
+<form action="{% url 'cFormFilling' %}" class="needs-validation" method="post" novalidate>
+  {% csrf_token %}
+  <div class="alert alert-danger" role="alert">
+    Your form was rejected by {{coordinator.Secretary}}. Please fill it again
+  </div>
+
+  <div class="form-outline mb-4">
+    <label class="form-label" for="form6Example7">Objective of the Activity (Minimum 50 Words)</label>
+    <textarea name="quest1" class="form-control" id="form6Example7" rows="4" minlength="300" required></textarea>
+    <div class="invalid-feedback">Atleast 50 words required.</div>
+  </div>
+
+  <div class="form-outline mb-4">
+    <label class="form-label" for="form6Example7">Description of the Activity (Minimum 100 words)</label>
+    <textarea name="quest2" class="form-control" id="form6Example7" rows="4" minlength="650" required></textarea>
+    <div class="invalid-feedback">Atleast 100 words required.</div>
+  </div>
+
+  <div class="form-outline mb-4">
+    <label class="form-label" for="form6Example7">Benefits to Society (Minimum 100 words)</label>
+    <textarea name="quest3" class="form-control" id="form6Example7" rows="4" minlength="650" required></textarea>
+    <div class="invalid-feedback">Atleast 100 words required.</div>
+  </div>
+
+  <div class="form-outline mb-4">
+    <label class="form-label" for="form6Example7">Benefits to Self (Minimum 100 Words)</label>
+    <textarea name="quest4" class="form-control" id="form6Example7" rows="4" minlength="650" required></textarea>
+    <div class="invalid-feedback">Atleast 100 words required.</div>
+  </div>
+
+  <div class="form-outline mb-4">
+    <label class="form-label" for="form6Example7">Learning, Experiences, challenges that you want to share (Minimum 100
+      words)</label>
+    <textarea name="quest5" class="form-control" id="form6Example7" rows="4" minlength="650" required></textarea>
+    <div class="invalid-feedback">Atleast 100 words required.</div>
+  </div>
+
+  <div class="form-outline mb-4">
+    <label class="form-label" for="form6Example7">How did it help you to shape your Empathy (Minimum 50 words)</label>
+    <textarea name="quest6" class="form-control" id="form6Example7" rows="4" minlength="300" required></textarea>
+    <div class="invalid-feedback">Atleast 50 words required.</div>
+  </div>
+
+  <div class="form-outline mb-4">
+    <label class="form-label" for="form6Example7">Enter your drive link</label>
+    <textarea name="quest7" class="form-control" id="form6Example7" rows="4" required></textarea>
+  </div>
+
+  <div class="input-group mb-3">
+    <div class="input-group-prepend">
+      <label class="input-group-text" for="inputGroupSelect01">Select your Secretary name</label>
+    </div>
+    <select name="Secretary" class="custom-select" id="inputGroupSelect01">
+      <option disabled selected value>Choose...</option>
+      {% for secretary in secretaries %}
+      <option value="{{secretary.sname}}">{{secretary.sname}}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <button type="submit" class="btn btn sub-btn btn-block mb-4">Submit</button>
+</form>
+{% endif %} {% endblock ccontent %}

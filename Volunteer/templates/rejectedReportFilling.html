@@ -1,0 +1,117 @@
+{% extends 'vdashboard.html' %}
+{% block vtitle %} Report Filling {% endblock vtitle %}
+{% block vcontent %}
+{% load static %}
+
+{% if volunteer.submitted == 0 and volunteer.verified == 2 and current.AcademicYear == volunteer.registered_academic_year and current.Semester == volunteer.registered_semester %}
+
+    <input contenteditable="false" type="hidden" value="{{volunteer.ans1}}" id="ans1_Hidden">
+  <input contenteditable="false" type="hidden" value="{{volunteer.ans2}}" id="ans2_Hidden">
+  <input contenteditable="false" type="hidden" value="{{volunteer.ans3}}" id="ans3_Hidden">
+  <input contenteditable="false" type="hidden" value="{{volunteer.ans4}}" id="ans4_Hidden">
+  <input contenteditable="false" type="hidden" value="{{volunteer.ans5}}" id="ans5_Hidden">
+  <input contenteditable="false" type="hidden" value="{{volunteer.ans6}}"
+    id="ans6_Hidden">
+    <h4 class="text-center">Report Filling for {{volunteer.activity}}</h4>
+    <input type="hidden" value="{{hours}}" id="hours">
+    <input type="hidden" value="{{minutes}}" id="minutes">
+
+
+    <h6 class="text-center"><b><div class="spinner-grow text-success" role="status" style="height: 12px; width: 12px; margin: 2px;"><span class="visually-hidden">Loading...</span>
+    </div>
+    Time left before your session expires:
+    <b id="time_left"></b> minutes</b></h6>
+
+
+
+    <form action="{% url 'report-filling' %}" method="POST" id="myForm">
+      {% csrf_token %}
+      <p style="text-align: left; color:red;">
+        <b>The reason for your report getting rejected is - </b> <br> "{{volunteer.rejection_reason}}" <br>
+        <b>Please make necessary changes accordingly.</b>
+      </p>
+
+      <div class="form-outline mb-4">
+        <label class="form-label" for="ans1">The objectives of {{volunteer.activity}}</label>
+        <textarea name="quest1" class="form-control " id="ans1" rows="4" minlength="700"
+          maxlength="999" required value="{{volunteer.ans1}}"
+          style="height: 250px;">{{volunteer.ans1}}</textarea>
+          <div style="text-align:right; padding-right: 20px; color: red;" id="countMessage1"></div>
+      </div>
+
+      <div class="form-outline mb-4">
+        <label class="form-label" for="ans2">Write a brief description of {{volunteer.activity}}</label>
+        <textarea name="quest2" class="form-control " id="ans2" rows="4" minlength="700"
+          maxlength="999" required value="{{volunteer.ans2}}"
+          style="height: 250px;">{{volunteer.ans2}}</textarea>
+          <div style="text-align:right; padding-right: 20px; color: red;" id="countMessage2"></div>
+      </div>
+
+      <div class="form-outline mb-4">
+        <label class="form-label" for="ans3">Benefits to the Society</label>
+        <textarea name="quest3" class="form-control " id="ans3" rows="4" minlength="700" maxlength="999"
+          required value="{{volunteer.ans3}}"
+          style="height: 250px;">{{volunteer.ans3}}</textarea>
+          <div style="text-align:right; padding-right: 20px; color: red;" id="countMessage3"></div>
+      </div>
+
+      <div class="form-outline mb-4">
+        <label class="form-label" for="ans4">Benefits to Self</label>
+        <textarea name="quest4" class="form-control " id="ans4" rows="4" minlength="700" maxlength="999"
+          required value="{{volunteer.ans4}}"
+          style="height: 250px;">{{volunteer.ans4}}</textarea>
+          <div style="text-align:right; padding-right: 20px; color: red;" id="countMessage4"></div>
+      </div>
+
+      <div class="form-outline mb-4">
+        <label class="form-label" for="ans5">Learning, experiences & challenges that you want to share</label>
+        <textarea name="quest5" class="form-control " id="ans5" rows="4" minlength="700"
+          maxlength="999" required value="{{volunteer.ans5}}"
+          style="height: 250px;">{{volunteer.ans5}}</textarea>
+          <div style="text-align:right; padding-right: 20px; color: red;" id="countMessage5"></div>
+      </div>
+
+      <div class="form-outline mb-4">
+        <label class="form-label" for="ans6">How did {{volunteer.activity}} help you to shape your empathy</label>
+        <textarea name="quest6" class="form-control " id="ans6" rows="4"
+          minlength="700" maxlength="999" required value="{{volunteer.ans6}}"
+          style="height: 250px;">{{volunteer.ans6}}</textarea>
+          <div style="text-align:right; padding-right: 20px; color: red;" id="countMessage6"></div>
+      </div>
+
+
+      <div class="form-outline mb-4">
+        <label class="form-label" for="url">Enter a drive link of the photos/videos taken during {{volunteer.activity}}</label>
+        <input type="text" class="form-control" name="quest7" id="url" required value="{{volunteer.url}}">
+      </div>
+
+      <p id="guardianFacultyNotChosen" style="display: none; color:red;">
+        <b>Please choose your Guardian Faculty!!!</b>
+      </p>
+
+      <div class="form-outline mb-2">
+        <label for="guardian_faculty">Choose your Guardian Faculty</label><br>
+        <select name="guardian_faculty" id="guardian_faculty" required>
+            <option selected disabled value="Choose">Choose...</option>
+            {% for faculty in guardian_faculties %}
+            <option value="{{faculty.name}}">{{faculty.name}}</option>
+            {% endfor %}
+        </select>
+      </div>
+      <small style="color:red;">Note that your Guardian Faculty may / may not be your class teacher. If you are unsure about who your Guardian Faculty is, then please check with your Coordinator.</small>
+      <br>
+      <small style="color:red;">Do not simply choose your Class Teacher by mistake if you don't know who your Guardian Faculty is!</small>
+      <br><br>
+
+      <p id="errorMessage" style="display: none; color:red;">
+        One or more answers does not have 700 characters entered. Please scroll up and enter atleast 700 characters for such question (s).
+      </p>
+
+
+  </form>
+  <button type="submit" class="btn btn-success mb-4" id="submitBtn" style="background-color: green; color: white;">
+    I have made necessary changes. Submit my report.
+  </button>
+  <script src="{% static 'dashboard/js/rejectedReportFilling.js' %}"></script>
+    {% endif %}
+    {% endblock vcontent %}

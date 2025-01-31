@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+  <title>Volunteer Data</title>
+  <link rel="icon" href="{% static 'auth/images/swdlogo.png' %}">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    th, td {
+        border: 1px solid black;
+        text-align: center;
+        padding: 8px;
+    }
+    colgroup {
+        width: 100%;
+    }
+    col.first-column {
+        width: 25%;
+    }
+    col.second-column {
+        width: 25%;
+    }
+    col.third-column {
+        width: 50%;
+    }
+</style>
+</head>
+
+<body>
+  <form action="{% url 'downloadVolunteerReportView' %}" method="POST" style="margin: 20px">
+    {% include 'messages.html' %} {% csrf_token %}
+    <select name="activity" required>
+      <option selected disabled>Choose...</option>
+      <option value="ALL">All Activities</option>
+      {% for activity in activities %}
+      <option value="{{activity.name}}">{{activity.name}}</option>
+      {% endfor %}
+    </select>
+    <br><br>
+    <select name="academic_year" required>
+        <option selected disabled>Choose...</option>
+        <option value="ALL">All Academic Years</option>
+        {% for ay in academic_years %}
+        <option value="{{ay}}">{{ay}}</option>
+        {% endfor %}
+    </select>
+    <br><br>
+    <select name="sem" required>
+      <option selected disabled>Choose...</option>
+      <option value="ALL">Both Semesters</option>
+      <option value="1">1st Semester</option>
+      <option value="2">2nd Semester</option>
+    </select>
+    <br><br>
+    <input type="text" name="secret_code" required placeholder="Secret Code" />
+    <br><br>
+    <div class="form-group">
+        {{ form.captcha }}
+    </div><br>
+    <input type="submit" class="btn btn-success" value="Download" />
+  </form>
+</body>
+<div style="margin:15px;">
+<h4>In the downloaded sheet, the values of the columns <b>Submitted</b> and <b>Verified</b> imply,</h4>
+<br>
+<table>
+    <colgroup>
+        <col class="first-column">
+        <col class="second-column">
+        <col class="third-column">
+    </colgroup>
+    <thead>
+        <tr>
+            <th>Submitted</th>
+            <th>Verified</th>
+            <th>Implication</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>0</td>
+            <td>0</td>
+            <td>Volunteer has not yet submitted report.</td>
+        </tr>
+        <tr>
+            <td>1</td>
+            <td>0</td>
+            <td>Volunteer has submitted report. It is yet to be verified by Cordinator.</td>
+        </tr>
+        <tr>
+            <td>1</td>
+            <td>1</td>
+            <td>Volunteer's report has been verified by Cordinator.</td>
+        </tr>
+        <tr>
+            <td>0</td>
+            <td>2</td>
+            <td>Volunteer's report has been rejected by Cordinator. Volunteer must fill report again.</td>
+        </tr>
+        <tr>
+            <td>1</td>
+            <td>3</td>
+            <td>Volunteer has been failed for not meeting criteria. He/She cannot fill report again.</td>
+        </tr>
+        <tr>
+            <td>0</td>
+            <td>3</td>
+            <td>Volunteer has been failed for not submitting report. He/She cannot fill report again.</td>
+        </tr>
+    </tbody>
+</table>
+</div>
+</html>

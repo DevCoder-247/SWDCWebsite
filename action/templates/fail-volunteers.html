@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fail Volunteers</title>
+    <link rel="icon" href="{% static 'auth/images/swdlogo.png' %}">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.4.1/mdb.min.css" rel="stylesheet" />
+</head>
+
+<body>
+    <form action="{% url 'fail' %}" method="POST" id="failForm" style="margin-top: 50px; margin-left: 50px">
+    {% include 'messages.html' %}
+    <p style="color: red; font-size: 17px;">This functionality is to fail volunteers who haven't submitted reports. They will be mailed that they have been failed.</p>
+    <p style="color: red; font-size: 17px;">Choose the Activity, Academic Year and Semester of the volunteers below</p>
+        {% csrf_token %}
+        <select name="activity" required id="activity">
+            {% for activity in activities %}
+            <option value="{{activity.name}}">{{activity.name}}</option>
+            {% endfor %}
+        </select>
+        <br><br>
+        <select name="academic_year" required id="academic_year">
+            {% for ay in academic_years %}
+            <option value="{{ay}}">{{ay}}</option>
+            {% endfor %}
+        </select>
+        <br><br>
+        <select name="semester" required id="semester">
+            <option value="1">1st Semester</option>
+            <option value="2">2nd Semester</option>
+        </select>
+        <br><br>
+        <input type="text" name="secret_code" required placeholder="Secret Code"/>
+        <br><br>
+        <div class="form-group">
+                {{ form.captcha }}
+            </div><br>
+    </form>
+    <button type="button" class="btn btn-danger" id="failBtn" style="margin-left: 50px"> Fail Volunters</button>
+
+    <script>
+        const failForm = document.getElementById('failForm')
+        const failBtn = document.getElementById('failBtn')
+        const activity = document.getElementById('activity')
+        const academic_year = document.getElementById('academic_year')
+        const semester = document.getElementById('semester')
+
+        failBtn.addEventListener('click',function(){
+            let userResponse = confirm("Activity - " + activity.value + "\n" + "Academic Year - " + academic_year.value + "\n" + "Semester - " + semester.value + "\n\n" + "These volunteers will be failed and mailed about it. This action is irreversible.")
+
+            if(userResponse === true)
+            {
+                failForm.submit();
+            }
+        });
+    </script>
+</body>
+
+</html>

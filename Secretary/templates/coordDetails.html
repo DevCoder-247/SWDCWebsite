@@ -1,0 +1,132 @@
+{% extends 'sdashboard.html' %}
+{% block stitle %} {{secretary.activity}}'s Team {% endblock stitle %}
+{% block scontent %}
+
+    <style>
+    .active-bar {
+  width: 5px;
+  background-color: #fff;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  display: none;
+  z-index: 1;
+}
+</style>
+{% if not flagship_coordinators and not social_coordinators %}
+<div class="alert alert-info" role="alert">
+    There are no Coordinators participating in {{secretary.activity}} currently.
+</div>
+{% endif %}
+
+{% if secretaries %}
+<h4>Secretaries along with you in {{secretary.activity}}</h4>
+<ul>
+{% for secretary in secretaries %}
+<li><p>{{secretary}}</p></li>
+{% endfor %}
+</ul>
+<br>
+{% endif %}
+
+{% if social_coordinators %}
+<h1>Coordinators along with you in {{secretary.activity}}</h1>
+<p>Total no. of coordinators - {{countRegistered}}</p>
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th scope="col">Name</th>
+            <!-- <th scope="col">Attendance Marked Today</th> -->
+            <th scope="col">View Volunteers</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for coord in social_coordinators %}
+        <tr>
+            <td>
+                <p>{{coord.cname}}</p>
+            </td>
+            <!-- <td>
+                {% if coord.marked_attendance_GP2 %}
+                <i class="bi bi-check green-color" style="font-size: 30px; stroke-width: 2px; color:green"></i>
+                {% else %}
+                <i class="bi bi-x red-color" style="font-size: 30px; stroke-width: 2px; color:red"></i>
+                {% endif %}
+            </td> -->
+            <td>
+                <form action="{% url 'view-volunteer-attendance' %}" method="POST">
+                    {% csrf_token %}
+                    <div class="spinner-border text-success {{coord.email}}" style="display: none;">
+                        <span class="sr-only"></span>
+                    </div>
+                    <input type="hidden" name="email" value="{{coord.email}}">
+                    <input class="btn btn-sm btn-outline-success" style="font-weight:bold;" type="submit" value="View" id="{{coord.email}}">
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endif %}
+
+
+
+{% if flagship_coordinators %}
+<h4>Coordinators along with you in {{secretary.activity}}</h4>
+<p>Total no. of coordinators - {{countRegistered}}</p>
+<p>Coordinators who have marked attendance today - {{countAttendance}}</p>
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th scope="col">Name</th>
+            <th scope="col">Attendance Marked Today</th>
+            <th scope="col">View Volunteers</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for coord in flagship_coordinators %}
+        <tr>
+            <td>
+                {{coord.cname}}
+            </td>
+            <td>
+                {% if coord.marked_attendance_FE %}
+                <i class="bi bi-check green-color" style="font-size: 30px; stroke-width: 2px; color:green"></i>
+                {% else %}
+                <i class="bi bi-x red-color" style="font-size: 30px; stroke-width: 2px; color:red"></i>
+                {% endif %}
+            </td>
+            <td>
+                <form action="{% url 'view-volunteer-attendance' %}" method="POST">
+                    {% csrf_token %}
+                    <div class="spinner-border text-success {{coord.email}}" style="display: none;">
+                        <span class="sr-only"></span>
+                    </div>
+                    <input type="hidden" name="email" value="{{coord.email}}">
+                    <input class="btn btn-sm btn-outline-success" style="font-weight:bold;" type="submit" value="View" id="{{coord.email}}">
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endif %}
+<script>
+        const viewBtns = document.querySelectorAll('.btn-outline-success');
+        const spinners = document.querySelectorAll('.spinner-border');
+            viewBtns.forEach(function (btn) {
+                btn.addEventListener('click', function () {
+                    const clickedBtn = this.id;
+                    spinners.forEach(function (spinner){
+                        if(spinner.className.includes(clickedBtn))
+                        {
+                            spinner.style.display = 'inline-block';
+                            document.getElementById(clickedBtn).style.display = 'none';
+                        }
+                    });
+
+            });
+        });
+</script>
+{% endblock scontent %}

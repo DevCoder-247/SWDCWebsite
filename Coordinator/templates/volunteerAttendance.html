@@ -1,0 +1,87 @@
+{% extends 'cdashboard.html' %}
+{% block ctitle %} View Attendance {% endblock ctitle %}
+{% block ccontent %}
+
+
+{% if coordinator.activity != 'not_chosen' and SS_data %}
+<h4>Attendance of {{coordinator.activity}}'s volunteers</h4>
+<br>
+{% for volunteer_data in SS_data %}
+{% for volunteer_name, attendance in volunteer_data.items %}
+<h6><b>{{volunteer_name}}</b></h6>
+{% if attendance %}
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th scope="col">Date</th>
+            <th scope="col">Attendance</th>
+        </tr>
+    </thead>
+    {% for date, status in attendance.items %}
+    <tbody>
+        <tr>
+            <td>{{date}}</td>
+            {% if status == "Present" %}
+            <td style="color: green; font-weight: bold;">{{status}}</td>
+            {% else %}
+            <td style="color: red; font-weight: bold;">{{status}}</td>
+            {% endif %}
+        </tr>
+    </tbody>
+    {% endfor %}
+</table>
+<br>
+{% else %}
+<small style="color: red;">No attendance records found :(</small>
+<br><br>
+{% endif %}
+{% endfor %}
+{% endfor %}
+{% endif %}
+
+{% if SS_data and FE_data %}
+<hr><br>
+{% endif %}
+
+{% if coordinator.flagshipEvent != 'not_chosen' and FE_data %}
+<h4>Attendance of {{coordinator.flagshipEvent}}'s volunteers</h4>
+<br>
+{% for volunteer_data in FE_data %}
+{% for volunteer_name, attendance in volunteer_data.items %}
+<h6><b>{{volunteer_name}}</b></h6>
+{% if attendance %}
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th scope="col">Date</th>
+            <th scope="col">Attendance</th>
+        </tr>
+    </thead>
+    {% for date, status in attendance.items %}
+    <tbody>
+        <tr>
+            <td>{{date}}</td>
+            {% if status == "Present" %}
+            <td style="color: green; font-weight: bold;">{{status}}</td>
+            {% else %}
+            <td style="color: red; font-weight: bold;">{{status}}</td>
+            {% endif %}
+        </tr>
+    </tbody>
+    {% endfor %}
+</table>
+<br>
+{% else %}
+<small style="color: red;">No attendance records found :(</small>
+<br><br>
+{% endif %}
+{% endfor %}
+{% endfor %}
+{% endif %}
+
+{% if not SS_data and not FE_data %}
+<div class="alert alert-danger" role="danger">
+    Oops! You have no volunteers under you.
+</div>
+{% endif %}
+{% endblock ccontent %}

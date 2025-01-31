@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Download Certificates</title>
+    <link rel="icon" href="{% static 'auth/images/swdlogo.png' %}">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.4.1/mdb.min.css" rel="stylesheet" />
+    <style>
+        body {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 30px;
+        }
+        form,
+        p {
+            text-align: center;
+            margin: 0;
+        }
+    </style>
+</head>
+
+<body>
+    <form action="{% url 'download-volunteer-certificates-zip' %}" id="myForm" method="POST">
+        {% include 'messages.html' %}
+        {% csrf_token %}
+        <p>This will download a zip file which has all the Certificates of those who cleared the course for the chosen
+            activity & year.</p>
+        <select name="act" class="form-control mb-3">
+            {% for activity in activities %}
+            <option value="{{activity.name}}">{{activity.name}}</option>
+            {% endfor %}
+        </select>
+        <select name="year" class="form-control mb-3">
+            {% for year in academic_years %}
+            <option value="{{year}}">{{year}}</option>
+            {% endfor %}
+        </select>
+        <select name="semester" class="form-control mb-3">
+            <option value="1">1</option>
+            <option value="2">2</option>
+        </select>
+        <input class="form-control" type="text" name="secret_code" required placeholder="Secret Code" />
+        <br>
+        <div class="form-group">
+                {{ form.captcha }}
+            </div><br>
+        <input class="form-control btn btn-success" id="submitBtn" type="submit" value="Download">
+            <span style=" color:green;" id="text">After you click the download button, it may take upto 30 seconds to begin downloading.</span>
+    </form>
+</body>
+</html>

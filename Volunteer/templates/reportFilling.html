@@ -1,0 +1,191 @@
+{% extends 'vdashboard.html' %}
+{% block vtitle %} Report Filling {% endblock vtitle %}
+{% block vcontent %}
+{% load static %}
+
+<style>
+    #copyMsg1, #copyMsg2 {
+            display: none;
+            border: 4px solid black;
+            padding: 2em;
+            width: 600px;
+            text-align: center;
+            background: #fff;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            -webkit-transform: translate(-50%, -50%)
+        }
+        .blocker {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            right: 0;
+            content: ' ';
+            background: rgba(0, 0, 0, .5);
+        }
+</style>
+
+
+{% if not activity.report_filling %}
+<div class="alert alert-danger">
+Report filling for {{activity.name}} is disabled.
+</div>
+{% endif %}
+
+
+{% if activity.report_filling and volunteer.Cordinator != '' and volunteer.Cordinator != '.' and volunteer.profile_edited != '' and volunteer.profile_edited != '.' and volunteer.submitted == 0 and volunteer.verified == 0 %}
+
+<div id="copyMsg1">
+    <h6><b>Please type your answers in your own words instead of copy-pasting.</b></h6>
+    <small style="font-size: 17px; color: red;">You have attempted to paste answers <small id="timesCopied">0</small> time(s).</small>
+    <br><br>
+    <button type="button" class="btn btn-sm btn-danger" id="closeBtn1">Close</button>
+</div>
+
+<div id="copyMsg2">
+    <h6><b>You can enter at max 15 characters at once.</b></h6>
+    <br><br>
+    <button type="button" class="btn btn-sm btn-danger" id="closeBtn2">Close</button>
+</div>
+<audio id="errorAudio" src="../static/error.mp3"></audio>
+
+
+
+
+<input contenteditable="false" type="hidden" value="{{volunteer.ans1}}" id="ans1_Hidden">
+<input contenteditable="false" type="hidden" value="{{volunteer.ans2}}" id="ans2_Hidden">
+<input contenteditable="false" type="hidden" value="{{volunteer.ans3}}" id="ans3_Hidden">
+<input contenteditable="false" type="hidden" value="{{volunteer.ans4}}" id="ans4_Hidden">
+<input contenteditable="false" type="hidden" value="{{volunteer.ans5}}" id="ans5_Hidden">
+<input contenteditable="false" type="hidden" value="{{volunteer.ans6}}"
+    id="ans6_Hidden">
+
+<form action="{% url 'report-filling' %}" method="POST" id="myForm" style="margin-bottom: 20px;">
+    {% csrf_token %}
+    <input type="hidden" value="{{hours}}" id="hours">
+    <input type="hidden" value="{{minutes}}" id="minutes">
+    <h3 class="text-center">Report Filling for {{volunteer.activity}}</h3>
+
+
+    <h6 class="text-center"><b><div class="spinner-grow text-success" role="status" style="height: 12px; width: 12px; margin: 2px;"><span class="visually-hidden">Loading...</span>
+    </div>
+    Time left before your session expires:
+    <b id="time_left"></b> minutes</b></h6>
+
+    <p class="text-center">
+        Your Browser: {{browser}} <br>
+        Your Operating System: {{os}}
+    </p>
+
+    <li style="text-align: left; color:red; font-size: 17px;">
+        <small >
+            Copy-pasting answers is prohibited and is not possible on this website.
+        </small>
+    </li>
+
+    <li style="text-align: left; color:red; font-size: 17px;">
+        <small >
+            Do not refresh this page or click on the back button. Doing so will delete all your answers and you'll have to type it again.
+        </small>
+    </li>
+    <li style="text-align: left; color:red; font-size: 17px;">
+        <small >
+            You may logout and login again to set your session expiry time back to 250 minutes.
+        </small>
+    </li>
+    <li style="text-align: left; color:red; font-size: 17px;">
+        <small >
+            Refreshing this page will not reset your session expiry time.
+        </small>
+    </li>
+    <li style="text-align: left; color:red; font-size: 17px;">
+        <small >
+            Make sure you submit your report before your session expires.
+        </small>
+    </li>
+    <br>
+
+    <div class="form-outline mb-4" contenteditable>
+        <label class="form-label" for="ans1" contenteditable="false">The objectives of {{volunteer.activity}}</label>
+        <textarea name="quest1" class="form-control " id="ans1" rows="4" maxlength="1300" required style="height: 250px;">{{volunteer.ans1}}</textarea>
+        <div style="text-align:right; padding-right: 20px;" id="countMessage1"><span id="wordCount1">700</span> characters to go!</div>
+        <div style="text-align:right; padding-right: 20px; color:green; display:none;" id="successMessage1">Cheers! You've answered this question!</div>
+    </div>
+
+    <div class="form-outline mb-4" contenteditable="false">
+        <label class="form-label" for="ans2">Write a brief description of {{volunteer.activity}}</label>
+        <textarea name="quest2" class="form-control " id="ans2" rows="4" maxlength="1300" required style="height: 250px;">{{volunteer.ans2}}</textarea>
+        <div style="text-align:right; padding-right: 20px;" id="countMessage2"><span id="wordCount2">700</span> characters to go!</div>
+        <div style="text-align:right; padding-right: 20px; color:green; display:none;" id="successMessage2">Woo-hoo! You've answered this one too!</div>
+    </div>
+
+    <div class="form-outline mb-4" contenteditable="false">
+        <label class="form-label" for="ans3">Benefits to the Society</label>
+        <textarea name="quest3" class="form-control " id="ans3" rows="4" maxlength="1300" required style="height: 250px;">{{volunteer.ans3}}</textarea>
+        <div style="text-align:right; padding-right: 20px;" id="countMessage3"><span id="wordCount3">700</span> characters to go!</div>
+        <div style="text-align:right; padding-right: 20px; color:green; display:none;" id="successMessage3">Good going! Three more questions to go!</div>
+    </div>
+
+    <div class="form-outline mb-4" contenteditable="false">
+        <label class="form-label" for="ans4">Benefits to Self</label>
+        <textarea name="quest4" class="form-control " id="ans4" rows="4" maxlength="1300" required style="height: 250px;">{{volunteer.ans4}}</textarea>
+        <div style="text-align:right; padding-right: 20px;" id="countMessage4"><span id="wordCount4">700</span> characters to go!</div>
+        <div style="text-align:right; padding-right: 20px; color:green; display:none;" id="successMessage4">Great buddy! Two more!</div>
+    </div>
+
+    <div class="form-outline mb-4" contenteditable="false">
+        <label class="form-label" for="ans5">Learning, experiences & challenges that you want to share</label>
+        <textarea name="quest5" class="form-control " id="ans5" rows="4" maxlength="1300" required style="height: 250px;">{{volunteer.ans5}}</textarea>
+        <div style="text-align:right; padding-right: 20px;" id="countMessage5"><span id="wordCount5">700</span> characters to go!</div>
+        <div style="text-align:right; padding-right: 20px; color:green; display:none;" id="successMessage5">Yippee! You've answered this question!</div>
+    </div>
+
+    <div class="form-outline mb-4" contenteditable="false">
+        <label class="form-label" for="ans6">How did {{volunteer.activity}} help you to shape your empathy</label>
+        <textarea name="quest6" class="form-control " id="ans6" rows="4" maxlength="1300" required style="height: 250px;">{{volunteer.ans6}}</textarea>
+        <div style="text-align:right; padding-right: 20px;" id="countMessage6"><span id="wordCount6">700</span> characters to go!</div>
+        <div style="text-align:right; padding-right: 20px; color:green; display:none;" id="successMessage6">Wonderful job! You've answered all the questions!</div>
+    </div>
+
+    <div class="form-outline mb-4" contenteditable="false">
+        <label class="form-label" for="url">Create a Google Drive / OneDrive folder of the photos & videos taken during {{volunteer.activity}} and enter it's link below <small><b>(make sure to give view access to your Coordinator)</b></small> </label>
+        <input type="text" class="form-control" name="quest7" id="url" required value="{{volunteer.url}}">
+        <small style="color: red;" id="urlError"></small>
+    </div>
+
+    <p id="guardianFacultyNotChosen" style="display: none; color:red;">
+        <b>Please choose your Guardian Faculty!!!</b>
+      </p>
+
+    <div class="form-outline mb-2">
+        <label for="guardian_faculty">Choose your Guardian Faculty</label><br>
+        <select name="guardian_faculty" id="guardian_faculty" required>
+            <option selected disabled value="Choose">Choose...</option>
+            {% for faculty in guardian_faculties %}
+            <option value="{{faculty.name}}">{{faculty.name}}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <small style="color:red;">Note that your Guardian Faculty may / may not be your class teacher. If you are unsure about who your Guardian Faculty is, then please check with your Coordinator.</small>
+    <br>
+    <small style="color:red;">Do not simply choose your Class Teacher by mistake if you don't know who your Guardian Faculty is!</small>
+    <br><br>
+
+    <p id="errorMessage" style="display: none; color:red;">
+        Please type the needed number for characters for each question!
+    </p>
+
+    <p id="answersError" style="color:red; width: 90%;"></p>
+
+    <button type="submit" class="btn btn-success" id="submitBtn"
+        style="background-color: grey; color: white; margin-bottom: 20px;" disabled>
+        Answer all questions to enable submit button
+    </button>
+</form>
+<script src="{% static 'dashboard/js/do-not-open-this.js' %}"></script>
+{% endif %}
+{% endblock vcontent %}

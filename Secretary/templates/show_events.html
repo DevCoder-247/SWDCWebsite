@@ -1,0 +1,92 @@
+{% extends 'sdashboard.html' %}
+{% block stitle %} {{secretary.activity}}'s Team {% endblock stitle %}
+{% block scontent %}
+
+
+<div id="showEventsContent" class="content-section"
+    style="margin-top:5%; padding-left: 5%; text-align: center;">
+    <table border="1px" style="margin-left: 0px; padding-left: 0px;">
+        <thead>
+            <tr>
+                <th>Divisions</th>
+                <th>Date</th>
+                <th>Start Time</th>
+                <th>End Time</th>
+                <th>Map Link</th>
+                <th>Mode</th>
+                <th>Modify</th>
+                <th>Remove</td>
+            </tr>
+        </thead>
+
+        <tbody>
+            {% if events %}
+            {% for event in events %}
+            <tr>
+                <td>{{event.divisions}}</td>
+                <td>{{event.date}}</td>
+                <td>{{event.start_time}}</td>
+                <td>{{event.end_time}}</td>
+                <td><a href="{{event.map_link}}" target="_blank">Link</a></td>
+                {% if event.isOnline %}
+                <td>Online</td>
+                {% else %}
+                <td>Offline</td>
+                {% endif %}
+
+                <td><span class="edit-icon"
+                        onclick="openModal('{{ forloop.counter }}', '{{ event.venue }}', '{{ event.map_link }}', '{{ event.start_time|date:'H:i' }}', '{{ event.end_time|date:'H:i' }}')">✏️</span>
+                </td>
+                <form method="post" action="{% url 'deleteEvent' %}">
+                    {% csrf_token %}
+                    <input type="hidden" value="{{ forloop.counter }}" name="id">
+                    <td><button type="submit"><span style="cursor: pointer;">🗑️</span></button>
+                    </td>
+                </form>
+            </tr>
+            {% endfor %}
+            {% else %}
+            <tr>
+                <td colspan="8">No Scheduled Activities</td>
+            </tr>
+            {% endif %}
+        </tbody>
+    </table>
+</div>
+
+<div class="modal" id="editModal" class="content-section" style="display: none;">
+    <div class="modal-content">
+        <span class="close-btn" onclick="closeModal()">&times;</span>
+        <div class="modal-header">Edit Event</div>
+        <form method="post" action="{% url 'updateEvent' %}">
+            {% csrf_token %}
+            <input type="hidden" name="id" id="id">
+
+            <div class="form-group">
+                <label for="venue">Venue of Event</label>
+                <input type="text" id="venue" name="venue" placeholder="Enter Venue">
+            </div>
+            <!--<div class="form-group">-->
+            <!--    <label for="date">Date of Event</label>-->
+            <!--    <input type="date" id="date">-->
+            <!--</div>-->
+            <div class="form-group">
+                <label for="startTime">Start Time of Event</label>
+                <input type="time" id="startTime" name="startTime">
+            </div>
+            <div class="form-group">
+                <label for="endTime">End Time of Event</label>
+                <input type="time" id="endTime" name="endTime">
+            </div>
+            <div class="form-group">
+                <label for="mapLink">Map Link</label>
+                <input type="text" id="mapLink" name="mapLink" placeholder="Enter map link">
+            </div>
+
+            <button type="submit" class="btn-submit" onclick="closeModal()">Update the
+                Event</button>
+        </form>
+    </div>
+</div>
+
+{% endblock scontent %}

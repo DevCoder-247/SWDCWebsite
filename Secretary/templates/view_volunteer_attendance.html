@@ -1,0 +1,42 @@
+{% extends 'sdashboard.html' %}
+{% block stitle %} View Volunteers {% endblock stitle %}
+{% block scontent %}
+<h4>Viewing Volunteers under {{coordinator.cname}}</h4>
+<br>
+{% if not data %}
+<div class="alert alert-danger" role="alert">There are no volunteers under {{coordinator.cname}}.</div>
+{% endif %}
+
+{% for volunteer_data in data %}
+{% for volunteer_name, attendance in volunteer_data.items %}
+<h5><b>{{volunteer_name}}</b></h5>
+{% if attendance %}
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th scope="col">Date</th>
+            <th scope="col">Attendance</th>
+        </tr>
+    </thead>
+    {% for date, status in attendance.items %}
+    <tbody>
+        <tr>
+            <td>{{date}}</td>
+            {% if status == "Present" %}
+            <td style="color: green; font-weight: bold;">{{status}}</td>
+            {% else %}
+            <td style="color: red; font-weight: bold;">{{status}}</td>
+            {% endif %}
+        </tr>
+    </tbody>
+    {% endfor %}
+</table>
+{% else %}
+<small style="color: red;">No attendance records found :(</small>
+<br>
+{% endif %}
+<br>
+{% endfor %}
+{% endfor %}
+
+{% endblock scontent %}

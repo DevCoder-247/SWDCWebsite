@@ -1,0 +1,207 @@
+{% extends 'vdashboard.html' %}
+{% block vtitle %} View Attendance {% endblock vtitle %}
+{% block vcontent %}
+{% load static %}
+
+<div id="markAttendance" class="container">
+    {% if volunteer.registered_academic_year == current.AcademicYear and volunteer.registered_semester == current.Semester %}
+    {% if volunteer.activity %}
+    <h1 style="text-align: center;">Scan your Coordinator's QR</h1>
+    <br>
+
+    <div style="display: flex; justify-content: center;">
+        <div id="reader" style="width:65%; height: 50%;"></div><br>
+    </div><br>
+    <div id="result"></div>
+    <button onclick="startScan()" id="start-scan">Start Scanning</button>
+
+
+    <form id="attendanceForm" method="POST" href="{% url 'mark_attendance' %}"
+        style="text-align: center;">
+        {% csrf_token %}
+        <input type="text" id="coord_name" class="attendanceForm" name="coord_name"
+            placeholder="Coordinator Name" readonly>
+        <input type="text" id="coord_prn" class="attendanceForm" name="coord_prn"
+            placeholder="Coordinator PRN" readonly>
+        <input type="text" id="coord_activity" class="attendanceForm" name="coord_activity"
+            placeholder="Activity" readonly>
+
+        <br>
+        <h1 style="padding-top: 3%; text-align: center;">Take a Geotagged Photo</h1>
+        <br>
+
+        <button id="start-camera">Start Camera</button><br><br>
+
+        <div style="display: flex; justify-content: center;">
+            <video style="width:85%; display: none;" id="video" autoplay></video>
+        </div>
+        <canvas id="canvas" style="display:none;"></canvas><br><br>
+
+        <button type="button" id="capture-btn" style="cursor: pointer;">Take Photo</button><br>
+        <img id="photo" alt="Your captured photo will appear here"
+            style="display: block; margin: 20px auto; max-width: 100%; align-items:center;" />
+        <input type="hidden" id="geo_photo" name="geo_photo">
+        <input type="hidden" id="actual_latitude" name="actual_latitude">
+        <input type="hidden" id="actual_longitude" name="actual_longitude">
+
+        <select id="activitySelect" class="activity-select" name="venue" required>
+            {% if events %}
+            <option value="">Select Venue</option>
+            {% for event in events %}
+            <option value="{{event.venue}}">{{event.venue}}</option>
+            {% endfor %}
+            {% else %}
+            <option value="">No venues available</option>
+            <!--<option value="temp">temp</option>-->
+            {% endif %}
+        </select>
+
+        <button type="submit" style="cursor: pointer;">Submit Attendance</button>
+    </form>
+
+    <script>
+        // function onScanSuccess(qrCodeMessage) {
+        //     console.log(qrCodeMessage);
+        //     // document.getElementById('result').innerText = `QR Code Message: ${qrCodeMessage}`;
+        //     document.getElementById('coord_name').value = `${qrCodeMessage.split('\nName: ')[1].split('\n')[0]}`;
+        //     document.getElementById('coord_prn').value = `${qrCodeMessage.substring(5, 13)}`;
+
+        //     fetch('/mark_attendance/', {
+        //         method: 'POST',
+        //         headers: {
+        //             'Content-Type': 'application/json',
+        //             'X-CSRFToken': '{{ csrf_token }}'
+        //         },
+        //         body: JSON.stringify({ qr_data: qrCodeMessage })
+        //     })
+        //     .then(response => response.json())
+        //     .then(data => {
+        //         console.log('Success:', data);
+        //     })
+        //     .catch((error) => {
+        //         console.error('Error:', error);
+        //     });
+
+        //     if (html5QrcodeScanner) {
+        //         html5QrcodeScanner.clear();
+        //     }
+        // }
+
+        // function onScanError(errorMessage) {
+        //     console.error('QR Code Scan Error:', errorMessage);
+        // }
+
+        // function startScan() {
+        //     const html5QrcodeScanner = new Html5QrcodeScanner(
+        //         'reader', { fps: 10, qrbox: { width: 250, height: 250 } });
+        //     html5QrcodeScanner.render(onScanSuccess, onScanError);
+        //     document.getElementById('start-scan').style.display = 'none';
+        // }
+
+
+        // function onScanSuccess(qrCodeMessage) {
+        //     // document.getElementById('result').innerText = `QR Code Message: ${qrCodeMessage}`;
+        //     document.getElementById('coord_name').value = `${qrCodeMessage.split('\nName: ')[1].split('\n')[0]}`;
+        //     document.getElementById('coord_prn').value = `${qrCodeMessage.substring(5, 13)}`;
+
+        //     fetch('/mark_attendance/', {
+        //         method: 'POST',
+        //         headers: {
+        //             'Content-Type': 'application/json',
+        //             'X-CSRFToken': '{{ csrf_token }}'
+        //         },
+        //         body: JSON.stringify({ qr_data: qrCodeMessage })
+        //     })
+        //     .then(response => response.json())
+        //     .then(data => {
+        //         console.log('Success:', data);
+        //     })
+        //     .catch((error) => {
+        //         console.error('Error:', error);
+        //     });
+
+        //     if (html5QrcodeScanner) {
+        //         html5QrcodeScanner.clear();
+        //     }
+        // }
+
+        // function onScanError(errorMessage) {
+        //     console.error('QR Code Scan Error:', errorMessage);
+        // }
+
+        // const html5QrcodeScanner = new Html5QrcodeScanner(
+        //     "reader", { fps: 10, qrbox: 250 });
+        // html5QrcodeScanner.render(onScanSuccess, onScanError);
+
+        let html5QrCode;
+
+        // Start the QR reader
+        function startScan() {
+            const cameraId = "reader"; // The ID of the scanner element
+            html5QrCode = new Html5Qrcode(cameraId);
+
+            html5QrCode.start(
+                { facingMode: "environment" }, // Use back camera
+                { fps: 10, qrbox: { width: 250, height: 250 } },
+                (qrCodeMessage) => {
+                    // console.log(`QR Code Scanned: ${qrCodeMessage}`);
+                    document.getElementById('coord_name').value = `${qrCodeMessage.split('\nName: ')[1].split('\n')[0]}`;
+                    document.getElementById('coord_prn').value = `${qrCodeMessage.substring(5, 13)}`;
+                    document.getElementById('coord_activity').value = `${qrCodeMessage.split('\nActivity: ')[1].split('\n')[0]}`;
+
+                    fetch('/v/mark_attendance/', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRFToken': '{{ csrf_token }}'
+                        },
+                        body: JSON.stringify({ qr_data: qrCodeMessage })
+                    })
+                        .then(response => response.json())
+                        .then(data => {
+                            console.log('Success:', data);
+                            stopAndClearScanner();
+                        })
+                        .catch((error) => {
+                            console.error('Simple Error:', error);
+                            stopAndClearScanner();
+                        });
+                },
+                (errorMessage) => {
+                    console.error(`QR Code Scan Error: ${errorMessage}`);
+                }
+            ).catch((err) => {
+                console.error(`Unable to start scanning: ${err}`);
+            });
+        }
+
+        function stopAndClearScanner() {
+            if (html5QrCode) {
+                html5QrCode.stop()
+                    .then(() => {
+                        console.log("QR Code scanner stopped successfully.");
+                        return html5QrCode.clear(); // Clears the scanner UI
+                    })
+                    .then(() => {
+                        console.log("QR Code scanner UI cleared.");
+                    })
+                    .catch((err) => {
+                        console.error("Error stopping or clearing QR Code scanner:", err);
+                    });
+            }
+        }
+    </script>
+
+    <p id="coordinates"></p>
+    {% else %}
+    <div>
+        <p>You haven't chosen any activity. Please choose one activity.</p>
+    </div>
+    {% endif %}
+    {% else %}
+    <div>
+        <p>You are not registered for the current academic year and semester.</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock vcontent %}

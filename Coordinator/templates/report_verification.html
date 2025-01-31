@@ -1,0 +1,191 @@
+{% extends 'cdashboard.html' %}
+{% block ctitle %} Events {% endblock ctitle %}
+{% block ccontent %}
+{% load static %}
+
+
+{% if not volunteers_done_GP2 and not volunteers_done_flagship_event and not volunteers_verified and not volunteers_rejected and not volunteers_failed %}
+<div class="alert alert-info">
+    When the Volunteers under you submit their reports, you will see them on this page.
+</div>
+{% endif %}
+
+<p style="font-size: 15px;"><a href="{% url 'c-rf' %}"><b>Click here</b></a> to view a sample of the report
+    filling page that the volunteers will be seeing.</p>
+
+
+{% if coordinator.activity != '' and coordinator.activity != '.' and coordinator.activity != 'not_chosen' %}
+<p style="font-size: 15px;"><a href="{% url 'c-ss-certificate' %}"><b>Click here</b></a> to view
+    {{coordinator.activity}}'s certificate which volunteers will receive by mail after you approve their
+    reports.</p>
+{% endif %}
+
+{% if coordinator.flagshipEvent != '' and coordinator.flagshipEvent != '.' and coordinator.flagshipEvent != 'not_chosen' %}
+<p style="font-size: 15px;"><a href="{% url 'c-fe-certificate' %}"><b>Click here</b></a> to view
+    {{coordinator.flagshipEvent}}'s certificate which volunteers will receive by mail after you approve their
+    reports.</p>
+{% endif %}
+
+<p style="font-size: 15px;"><a href="{% url 'c-report' %}"><b>Click here</b></a> to view the PDF of Activity
+    Report which volunteers will receive by mail after you approve their reports.</p>
+
+{% if volunteers_done_GP2 %}
+<h3>{{coordinator.activity}}'s Reports</h3>
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th scope="col" style="width:50%; text-align: center;">Name</th>
+            <th scope="col" style="width:50%; text-align: center;">Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for volunteer in volunteers_done_GP2 %}
+        <tr>
+            <td style="width:50%; text-align: center;">
+                {{volunteer.vname}}
+
+            </td>
+            <td style="width:50%; text-align: center;">
+                <form action="{% url 'CDashboard' %}" method="POST">
+                    {% csrf_token %}
+                    <div class="spinner-border text-success {{volunteer.email}}" style="display: none;">
+                        <span class="sr-only"></span>
+                    </div>
+                    <input type="hidden" name="email" value="{{volunteer.email}}">
+                    <input class="btn btn-sm btn-outline-success" style="font-weight:bold;" type="submit" value="View"
+                        id="{{volunteer.email}}">
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endif %}
+<br><br>
+
+{% if volunteers_done_flagship_event %}
+<h3>{{coordinator.flagshipEvent}}'s Reports</h3>
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th scope="col" style="width:50%; text-align: center;">Name</th>
+            <th scope="col" style="width:50%; text-align: center;">Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for volunteer in volunteers_done_flagship_event %}
+        <tr>
+            <td style="width:50%; text-align: center;">
+                {{volunteer.vname}}
+
+            </td>
+            <td style="width:50%; text-align: center;">
+                <form action="{% url 'CDashboard' %}" method="POST">
+                    {% csrf_token %}
+                    <div class="spinner-border text-success {{volunteer.email}}" style="display: none;">
+                        <span class="sr-only"></span>
+                    </div>
+                    <input type="hidden" name="email" value="{{volunteer.email}}">
+                    <input class="btn btn-sm btn-outline-success" style="font-weight:bold; border: 2px solid green;"
+                        type="submit" value="View" id="{{volunteer.email}}">
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endif %}
+
+
+{% if volunteers_verified %}
+<br>
+<h3>Reports Verified</h3>
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th scope="col" style="width:50%; text-align: center;">Name</th>
+            <th scope="col" style="width:50%; text-align: center;">Activity</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for volunteer in volunteers_verified %}
+        <tr>
+            <td style="width:50%; text-align: center;">
+                {{volunteer.vname}}
+
+            </td>
+            <td style="width:50%; text-align: center;">
+                {{volunteer.activity}}
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endif %}
+
+
+{% if volunteers_rejected %}
+<br>
+<h3>Reports Rejected</h3>
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th scope="col" style="width:33%; text-align: center;">Name</th>
+            <th scope="col" style="width:33%; text-align: center;">Activity</th>
+            <th scope="col" style="width:33%; text-align: center;">Reason</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for volunteer in volunteers_rejected %}
+        <tr>
+            <td style="width:33%; text-align: center;">{{volunteer.vname}}</td>
+            <td style="width:33%; text-align: center;">{{volunteer.activity}}</td>
+            <td style="width:33%; text-align: center;">{{volunteer.rejection_reason}}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endif %}
+
+
+{% if volunteers_failed %}
+<br>
+<h3>Volunteers Failed</h3>
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th scope="col" style="width:33%; text-align: center;">Name</th>
+            <th scope="col" style="width:33%; text-align: center;">Activity</th>
+            <th scope="col" style="width:33%; text-align: center;">Reason</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for volunteer in volunteers_failed %}
+        <tr>
+            <td style="width:33%; text-align: center;">{{volunteer.vname}}</td>
+            <td style="width:33%; text-align: center;">{{volunteer.activity}}</td>
+            <td style="width:33%; text-align: center;">{{volunteer.rejection_reason}}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endif %}
+
+<script>
+    const viewBtns = document.querySelectorAll('.btn-outline-success');
+    const spinners = document.querySelectorAll('.spinner-border');
+    viewBtns.forEach(function (btn) {
+        btn.addEventListener('click', function () {
+            const btnID = this.id;
+            spinners.forEach(function (spinner) {
+                if (spinner.className.includes(btnID)) {
+                    spinner.style.display = 'inline-block';
+                    document.getElementById(btnID).style.display = 'none';
+                }
+            });
+
+        });
+    });
+</script>
+
+{% endblock ccontent %}

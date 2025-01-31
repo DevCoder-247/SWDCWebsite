@@ -1,0 +1,283 @@
+{% extends 'sdashboard.html' %}
+{% block stitle %} {{activity}} {% endblock stitle %}
+{% block scontent %}
+{% load static %}
+<style>
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    th, td {
+        border: 1px solid black;
+        text-align: center;
+        padding: 8px;
+    }
+    colgroup {
+        width: 100%;
+    }
+    col.first-column {
+        width: 25%;
+    }
+    col.second-column {
+        width: 25%;
+    }
+    col.third-column {
+        width: 50%;
+    }
+
+        #namesContainer {
+            display: none;
+            border: 6px solid #91aa4c;
+            padding-left: 15px;
+            padding-bottom: 15px;
+            width: 80%;
+            height: 70%;
+            overflow: auto;
+            text-align: left;
+            background: #fff;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            -webkit-transform: translate(-50%, -50%);
+        }
+</style>
+<div id="namesContainer">
+        <br>
+        <h4 id="headingType"></h4>
+        <div style="display: flex; margin-top: 10px;">
+            <div class="spinner-border text-success" style="display: none; height:25px; width:25px;" id="loader">
+                <span class="sr-only"></span>
+            </div> &nbsp;&nbsp;
+            <p id="names" style="font-weight: bold;"></p>
+        </div>
+        <p id="copySuccess" style="color: green; display: none;">Names have been copied.</p>
+        <div style="display: flex;">
+            <button id="closeContainer" class="btn btn-danger btn-sm">Close</button>
+            <button id="copyBtn" class="btn btn-success btn-sm" style="margin-left: 6px; display: none;">Copy</button>
+        </div>
+        <br>
+    </div>
+
+
+<form action="{% url 's_my_activity' %}" method="POST">
+    {% csrf_token %}
+    <h3>Click the button to download the volunteers' data of {{activity}}</h3>
+    <input type="submit" class="btn btn-success" value="Download">
+</form>
+<hr>
+<h5>Activity Summary</h5>
+<table class="table table-bordered">
+    <colgroup>
+        <col class="third-column">
+        <col class="third-column">
+    </colgroup>
+    <thead>
+        <tr>
+            <th>Report status <br> <small>(Click the below links to view volunteer names)</small></th>
+            <th>Count</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td><a style="text-decoration: none; color: blue; cursor: pointer;" onclick="fetchNames('Not Yet Submitted', '{{activity.name}}', '{{academic_year}}', '{{sem}}')" style="color: blue; text-decoration: underline; cursor: pointer;">Not Yet Submitted</a></td>
+            <td>{{not_yet_submitted}}</td>
+        </tr>
+        <tr>
+            <td><a style="text-decoration: none; color: blue; cursor: pointer;" onclick="fetchNames('Submitted, yet to be verified', '{{activity.name}}', '{{academic_year}}', '{{sem}}')" style="color: blue; text-decoration: underline; cursor: pointer;">Submitted, yet to be verified</a></td>
+            <td>{{submitted_yet_to_be_verified}}</td>
+        </tr>
+        <tr>
+            <td><a style="text-decoration: none; color: blue; cursor: pointer;" onclick="fetchNames('Approved', '{{activity.name}}', '{{academic_year}}', '{{sem}}')" style="color: blue; text-decoration: underline; cursor: pointer;">Approved</a></td>
+            <td>{{verified}}</td>
+        </tr>
+        <tr>
+            <td><a style="text-decoration: none; color: blue; cursor: pointer;" onclick="fetchNames('Rejected, yet to fill again', '{{activity.name}}', '{{academic_year}}', '{{sem}}')" style="color: blue; text-decoration: underline; cursor: pointer;">Rejected, yet to fill again</a></td>
+            <td>{{rejected}}</td>
+        </tr>
+        <tr>
+            <td><a style="text-decoration: none; color: blue; cursor: pointer;" onclick="fetchNames('Failed for not meeting criteria', '{{activity.name}}', '{{academic_year}}', '{{sem}}')" style="color: blue; text-decoration: underline; cursor: pointer;">Failed for not meeting criteria</a></td>
+            <td>{{failed_by_coords}}</td>
+        </tr>
+        <tr>
+            <td><a style="text-decoration: none; color: blue; cursor: pointer;" onclick="fetchNames('Failed for not submitting report', '{{activity.name}}', '{{academic_year}}', '{{sem}}')" style="color: blue; text-decoration: underline; cursor: pointer;">Failed for not submitting report</a></td>
+            <td>{{failed_for_not_submitting_report}}</td>
+        </tr>
+        <tr>
+
+            <td><b>Total No. of Volunteers</b></td>
+            <td><b>{{total}}</b></td>
+        </tr>
+    </tbody>
+</table>
+
+<br>
+{% if activity.report_verification %}
+<h5><b>Coordinators yet to approve reports</b></h5>
+{% if len != 0 %}
+<table class="table  table-bordered">
+    <colgroup>
+        <col class="third-column">
+        <col class="third-column">
+    </colgroup>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Number of reports to be approved</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for coord, number in c_yet_to_verify.items %}
+        <tr>
+            <td>{{coord}}</td>
+            <td>{{number}}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<div class="alert alert-success">
+    All coordinators have approved reports!
+</div>
+{% endif %}
+{% endif %}
+
+<p style="font-size: 15px;"><a href="{% url 's-rf' %}"><b>Click here</b></a> to view a sample of the report filling page that the volunteers will be seeing.</p>
+<p style="font-size: 15px;"><a href="{% url 's-show-certificate' %}"><b>Click here</b></a> to view the certificate which volunteers will receive by mail after Coordinators approve their reports.</p>
+<p style="font-size: 15px;"><a href="{% url 's-show-report' %}"><b>Click here</b></a> to view the PDF report which volunteers will receive by mail after Coordinators approve their reports.</p>
+<br>
+<h5><b>In the downloaded sheet, the values of the columns 'Submitted' and 'Verified' imply,</b></h5>
+<br>
+<table class="table table-bordered">
+    <colgroup>
+        <col class="first-column">
+        <col class="second-column">
+        <col class="third-column">
+    </colgroup>
+    <thead>
+        <tr>
+            <th>Submitted</th>
+            <th>Verified</th>
+            <th>Implication</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>0</td>
+            <td>0</td>
+            <td>Volunteer has not yet submitted report.</td>
+        </tr>
+        <tr>
+            <td>1</td>
+            <td>0</td>
+            <td>Volunteer has submitted report. It is yet to be verified by Cordinator.</td>
+        </tr>
+        <tr>
+            <td>1</td>
+            <td>1</td>
+            <td>Volunteer's report has been approved by Cordinator.</td>
+        </tr>
+        <tr>
+            <td>0</td>
+            <td>2</td>
+            <td>Volunteer's report has been rejected by Cordinator. Volunteer must fill report again.</td>
+        </tr>
+        <tr>
+            <td>1</td>
+            <td>3</td>
+            <td>Volunteer has been failed for not meeting criteia. He/She cannot fill report again.</td>
+        </tr>
+        <tr>
+            <td>0</td>
+            <td>3</td>
+            <td>Volunteer has been failed for not submitting report. He/She cannot fill report again.</td>
+        </tr>
+    </tbody>
+</table>
+<br>
+<p style="text-align: left;">In the attendance column, if there is a <b>$</b> sign before the date, then the volunteer is present for that date. If there is a <b>!</b> sign before the date, then the volunteer is absent for that date.</p>
+
+<script>
+
+const namesContainer = document.getElementById("namesContainer");
+const names = document.getElementById("names");
+const loader = document.getElementById("loader");
+const headingType = document.getElementById("headingType");
+const copyBtn = document.getElementById("copyBtn");
+const copySuccess = document.getElementById("copySuccess");
+
+
+copyBtn.addEventListener('click', function(){
+    navigator.clipboard.writeText(names.innerText);
+    copySuccess.style.display = 'block';
+})
+
+function fetchNames(queryType, activity, ay, sem) {
+  copyBtn.style.display = "none";
+  copySuccess.style.display = 'none';
+  headingType.innerHTML = queryType;
+  namesContainer.style.display = "block";
+  loader.style.display = 'inline-block';
+  names.innerHTML = "Please wait...";
+
+  var submitted = 0;
+  var verified = 0;
+  if (queryType === "Not Yet Submitted") {
+    submitted = verified = 0;
+  } else if (queryType === "Submitted, yet to be verified") {
+    submitted = 1;
+    verified = 0;
+  } else if (queryType === "Approved") {
+    submitted = verified = 1;
+  } else if (queryType === "Rejected, yet to fill again") {
+    submitted = 0;
+    verified = 2;
+  } else if (queryType === "Failed for not meeting criteria") {
+    submitted = 1;
+    verified = 3;
+  } else if (queryType === "Failed for not submitting report") {
+    submitted = 0;
+    verified = 3;
+  }
+
+  const data = {
+    secret_code: "MySecretCode$2003-2025",
+    submitted: submitted,
+    verified: verified,
+    activity: activity,
+    academic_year: ay,
+    semester: sem,
+  };
+
+  fetch("/action/fetch-volunteer-names", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(data),
+  })
+    .then((response) => {
+        loader.style.display = 'none';
+      return response.json();
+    })
+    .then((data) => {
+      if (data["names"].length === 0) {
+        names.innerHTML = "No volunteers found";
+        return;
+      }
+      copyBtn.style.display = "block";
+      names.innerHTML = "";
+      for (let i = 0; i < data["names"].length; i++)
+        names.innerHTML +=
+          `<br>` + (i + 1).toString() + ") " + data["names"][i];
+    });
+
+  document
+    .getElementById("closeContainer")
+    .addEventListener("click", function () {
+      namesContainer.style.display = "none";
+    });
+}
+
+</script>
+{% endblock scontent %}

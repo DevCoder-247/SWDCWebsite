@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="en">
+{% load static %}
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Info</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="icon" href="{% static 'auth/images/swdlogo.png' %}">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js">
+    </script>
+
+    <style>
+        #namesContainer {
+            display: none;
+            border: 6px solid #91aa4c;
+            padding-left: 15px;
+            padding-bottom: 15px;
+            width: 80%;
+            height: 70%;
+            overflow: auto;
+            text-align: left;
+            background: #fff;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            -webkit-transform: translate(-50%, -50%);
+        }
+    </style>
+
+</head>
+
+<body style="margin-top: 30px; margin-left: 30px; margin-right: 30px; margin-bottom: 30px;">
+
+    <div id="namesContainer">
+        <br>
+        <h4 id="header"></h4>
+        <div style="display: flex; margin-top: 10px;">
+            <div class="spinner-border text-success" style="display: none; height:25px; width:25px;" id="loader">
+                <span class="sr-only"></span>
+            </div> &nbsp;&nbsp;
+            <p id="names" style="font-weight: bold;"></p>
+        </div>
+        <p id="copySuccess" style="color: green; display: none;">Names have been copied to your device clipboard.</p>
+        <div style="display: flex;">
+            <button id="closeContainer" class="btn btn-danger btn-sm">Close</button>
+            <button id="copyBtn" class="btn btn-success btn-sm" style="margin-left: 6px;">Copy</button>
+        </div>
+    </div>
+
+
+
+    {% if default %}
+    <p style="font-weight: bold; margin-bottom: 0px;">By default, this page shows the Report Filling status of
+        Volunteers of this Semester.</p>
+    <p style="font-weight: bold;">For more options, click on the dropdown below:</p>
+    {% endif %}
+
+    <select id="choice" class="form-select">
+        <option selected disabled>Choose any one of these options</option>
+        <option value="VolunteerDiv">View Report Filling status of Volunteers</option>
+        <option value="CoordinatorDiv">View Report Verification status of Coordinators</option>
+    </select>
+    <br><br>
+
+    <div id="VolunteerDiv" style="display: none;">
+        <p style="font-weight: bold;">Report Filling status of the Volunteers</p>
+        <form action="{% url 'info' %}" method="POST">
+            {% csrf_token %}
+            <input type="hidden" name="password" value="{{INFO_PWD2}}">
+            <input type="hidden" name="activities" value="" id="activities1">
+            <input type="hidden" name="type" value="Volunteer">
+
+
+            <div class="dropdown">
+                <button class="dropdown-toggle" type="button" id="multiSelectDropdown1" data-bs-toggle="dropdown"
+                    aria-expanded="false">
+                    Select one or more activities
+                </button>
+                <ul class="dropdown-menu" aria-labelledby="multiSelectDropdown1" id="dropdownMenu1">
+                    {% for activity in activities %}
+                    <li style="margin-left: 10px; margin-right: 10px;">
+                        <label for="{{activity.name}}" style="cursor: pointer;">
+                            <input type="checkbox" class="form-check-input" value="{{activity.name}}"
+                                id="{{activity.name}}" style="cursor: pointer;">
+                            {{activity.name}}
+                        </label>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+
+
+            <br>
+            <select name="academic_year" required class="dropdown-toggle form-select" required>
+                <option selected disabled>Select Year</option>
+                {% for ay in academic_years %}
+                <option value="{{ay}}">{{ay}}</option>
+                {% endfor %}
+            </select>
+            <br><br>
+            <select name="sem" required class="dropdown-toggle form-select" required>
+                <option selected disabled>Select Semester</option>
+                <option value="1">1st Semester</option>
+                <option value="2">2nd Semester</option>
+            </select>
+            <br><br>
+            <button type="submit" class="btn btn-success">Submit</button>
+        </form>
+        <br>
+    </div>
+
+
+    <div id="CoordinatorDiv" style="display: none;">
+        <p style="font-weight: bold;">Report Verification status of the Coordinators</p>
+        <form action="{% url 'info' %}" method="POST">
+            {% csrf_token %}
+            <input type="hidden" name="password" value="{{INFO_PWD2}}">
+            <input type="hidden" name="activities" value="" id="activities2">
+            <input type="hidden" name="type" value="Coordinator">
+
+
+            <div class="dropdown">
+                <button class="dropdown-toggle" type="button" id="multiSelectDropdown2" data-bs-toggle="dropdown" aria-expanded="false">
+                    Select one or more activities
+                </button>
+                <ul class="dropdown-menu" aria-labelledby="multiSelectDropdown2" id="dropdownMenu2">
+                    {% for activity in activities %}
+                    <li style="margin-left: 10px; margin-right: 10px;">
+                        <label for="{{activity.name}}" style="cursor: pointer;">
+                            <input type="checkbox" class="form-check-input" value="{{activity.name}}" id="{{activity.name}}" style="cursor: pointer;">
+                            {{activity.name}}
+                        </label>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+
+            <br>
+            <select name="academic_year" required class="dropdown-toggle form-select" required>
+                <option selected disabled>Select Year</option>
+                {% for ay in academic_years %}
+                <option value="{{ay}}">{{ay}}</option>
+                {% endfor %}
+            </select>
+            <br><br>
+            <select name="sem" required class="dropdown-toggle form-select" required>
+                <option selected disabled>Select Semester</option>
+                <option value="1">1st Semester</option>
+                <option value="2">2nd Semester</option>
+            </select>
+            <br><br>
+            <button type="submit" class="btn btn-success">Submit</button>
+        </form>
+        <br>
+    </div>
+
+
+
+
+
+
+    {% if volunteerData %}
+    <p style="margin-bottom: 0px;"><b>Currently showing data for:</b></p>
+    <p style="margin-bottom: 0px;">Academic Year - {{academic_year}}</p>
+    <p style=" margin-bottom: 20px;">Semester - {{sem}}</p>
+
+    <h3>Total</h3>
+    <table class="table table-bordered" style="border: 2px;">
+        <thead>
+            <tr>
+                <th>Status</th>
+                <th>Number</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Not Yet Submitted</td>
+                <td>{{total_not_yet_submitted}}</td>
+            </tr>
+            <tr>
+                <td>Submitted, yet to be verified</td>
+                <td>{{total_submitted_yet_to_be_verified}}</td>
+            </tr>
+            <tr>
+                <td>Approved</td>
+                <td>{{total_approved}}</td>
+            </tr>
+            <tr>
+                <td>Rejected, yet to fill again</td>
+                <td>{{total_rejected}}</td>
+            </tr>
+            <tr>
+                <td>Failed for not meeting criteria</td>
+                <td>{{total_failed_by_coords}}</td>
+            </tr>
+            <tr>
+                <td>Failed for not submitting report</td>
+                <td>{{total_failed_for_not_submitting_report}}</td>
+            </tr>
+            <tr>
+                <td>Total Volunteers</td>
+                <td>{{total_total}}</td>
+            </tr>
+        </tbody>
+    </table>
+    <br>
+
+
+
+    {% for activity, activityData in volunteerData.items %}
+    <h3>{{activity}}</h3>
+    {% if activityData %}
+    <small><b>(Click on any of the below links to view volunteer names)</b></small>
+    <table class="table table-bordered" style="border: 2px;">
+        <thead>
+            <tr>
+                <th>Status</th>
+                <th>Number</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for key, val in activityData.items %}
+            <tr>
+                {% if key != 'Total Volunteers' %}
+                <td><a style="text-decoration: none; color: blue; cursor: pointer;" onclick="fetchNames('{{key}}', '{{activity}}', '{{academic_year}}', '{{sem}}')" style="color: blue; text-decoration: underline; cursor: pointer;">{{key}}</a></td>
+                {% else %}
+                <td style="font-weight: bold;">{{key}}</td>
+                {% endif %}
+                <td>{{val}}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <br>
+    {% else %}
+    <p style="margin-top: 0px; padding-top: 0px;">No records found for Academic Year {{academic_year}} and Semester
+        {{sem}}</p>
+    {% endif %}
+    {% endfor %}
+    {% endif %}
+
+
+    {% if coordData %}
+    <p style="margin-bottom: 0px;"><b>Currently showing data for:</b></p>
+    <p style="margin-bottom: 0px;">Academic Year - {{academic_year}}</p>
+    <p style=" margin-bottom: 20px;">Semester - {{sem}}</p>
+    {% for activity, data in coordData.items %}
+    <h3>{{activity}}</h3>
+
+
+    {% if data %}
+    <table class="table table-bordered" style="border: 2px;">
+        <thead>
+            <tr>
+                <th>Coord Name</th>
+                <th>No. of reports to be verified</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for key, val in data.items %}
+            <tr>
+                <td>{{key}}</td>
+                <td>{{val}}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <br>
+    {% else %}
+    <p style="margin-top: 0px; padding-top: 0px;">There are no reports that are submitted & yet to be verified. Either all coordinators have verified reports or report filling has not started.</p>
+    {% endif %}
+    {% endfor %}
+    {% endif %}
+
+    <script>
+        const choice = document.getElementById("choice");
+const VolunteerDiv = document.getElementById("VolunteerDiv");
+const CoordinatorDiv = document.getElementById("CoordinatorDiv");
+
+choice.addEventListener("change", function () {
+  if (choice.value === "VolunteerDiv") {
+    VolunteerDiv.style.display = "block";
+    CoordinatorDiv.style.display = "none";
+  } else {
+    VolunteerDiv.style.display = "none";
+    CoordinatorDiv.style.display = "block";
+  }
+});
+
+// Volunteer
+const dropdownButton1 = document.getElementById("multiSelectDropdown1");
+const dropdownMenu1 = document.getElementById("dropdownMenu1");
+const activities1 = document.getElementById("activities1");
+
+let mySelectedItems1 = [];
+
+function handleCB1(event) {
+  const checkbox1 = event.target;
+  if (checkbox1.checked) {
+    mySelectedItems1.push(checkbox1.value);
+  } else {
+    mySelectedItems1 = mySelectedItems1.filter(
+      (item) => item !== checkbox1.value
+    );
+  }
+  activities1.value = "";
+  for (let i = 0; i < mySelectedItems1.length; i++) {
+    activities1.value += mySelectedItems1[i] + ".";
+  }
+
+  dropdownButton1.innerText =
+    mySelectedItems1.length > 0 ? mySelectedItems1.join(", ") : "Select Items";
+}
+
+dropdownMenu1.addEventListener("change", handleCB1);
+
+// Coordinator
+const dropdownButton2 = document.getElementById("multiSelectDropdown2");
+const dropdownMenu2 = document.getElementById("dropdownMenu2");
+const activities2 = document.getElementById("activities2");
+
+let mySelectedItems2 = [];
+
+function handleCB2(event) {
+  const checkbox2 = event.target;
+  if (checkbox2.checked) {
+    mySelectedItems2.push(checkbox2.value);
+  } else {
+    mySelectedItems2 = mySelectedItems2.filter(
+      (item) => item !== checkbox2.value
+    );
+  }
+  activities2.value = "";
+  for (let i = 0; i < mySelectedItems2.length; i++) {
+    activities2.value += mySelectedItems2[i] + ".";
+  }
+
+  dropdownButton2.innerText =
+    mySelectedItems2.length > 0 ? mySelectedItems2.join(", ") : "Select Items";
+}
+
+dropdownMenu2.addEventListener("change", handleCB2);
+
+const namesContainer = document.getElementById("namesContainer");
+const names = document.getElementById("names");
+const loader = document.getElementById("loader");
+const header = document.getElementById("header");
+const copyBtn = document.getElementById("copyBtn");
+const copySuccess = document.getElementById("copySuccess");
+
+
+copyBtn.addEventListener('click', function(){
+    navigator.clipboard.writeText(names.innerText);
+    copySuccess.style.display = 'block';
+})
+
+function fetchNames(queryType, activity, ay, sem) {
+  copyBtn.style.display = "none";
+  copySuccess.style.display = "none";
+  header.innerHTML = queryType;
+  namesContainer.style.display = "block";
+  loader.style.display = 'inline-block';
+  names.innerHTML = "Please wait...";
+
+  var submitted = 0;
+  var verified = 0;
+  if (queryType === "Not Yet Submitted") {
+    submitted = verified = 0;
+  } else if (queryType === "Submitted, yet to be verified") {
+    submitted = 1;
+    verified = 0;
+  } else if (queryType === "Approved") {
+    submitted = verified = 1;
+  } else if (queryType === "Rejected, yet to fill again") {
+    submitted = 0;
+    verified = 2;
+  } else if (queryType === "Failed for not meeting criteria") {
+    submitted = 1;
+    verified = 3;
+  } else if (queryType === "Failed for not submitting report") {
+    submitted = 0;
+    verified = 3;
+  }
+
+  const data = {
+    secret_code: '{{pwd}}',
+    submitted: submitted,
+    verified: verified,
+    activity: activity,
+    academic_year: ay,
+    semester: sem,
+  };
+
+  fetch("/action/fetch-volunteer-names", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(data),
+  })
+    .then((response) => {
+        loader.style.display = 'none';
+      return response.json();
+    })
+    .then((data) => {
+      if (data["names"].length === 0) {
+        names.innerHTML = "No volunteers found";
+        return;
+      }
+      copyBtn.style.display = "block";
+      names.innerHTML = "";
+      for (let i = 0; i < data["names"].length; i++)
+        names.innerHTML +=
+          `<br>` + (i + 1).toString() + ") " + data["names"][i];
+    });
+}
+
+ document.getElementById("closeContainer").addEventListener("click", function () {
+     namesContainer.style.display = "none";
+ });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,15 @@
+{% extends 'vdashboard.html' %}
+{% block vtitle %} Blocked {% endblock vtitle %}
+{% block vcontent %}
+{% load static %}
+
+
+<div class="alert alert-info">
+    For security reasons, the Report Filling page is only accessible via a laptop/desktop.
+</div>
+<p style="margin-top: 0px;">You are currently accessing this website using a device with below details:</p>
+<p style="margin-top: 0px; margin-bottom: 0px;">Device Type: Mobile/Tablet</p>
+<p style="margin-top: 0px; margin-bottom: 0px;">Browser: {{browser}}</p>
+<p style="margin-top: 0px;">Operating System: {{os}}</p>
+<a href="{% url 'vdashboard' %}">Click here to go back!</a>
+{% endblock vcontent %}

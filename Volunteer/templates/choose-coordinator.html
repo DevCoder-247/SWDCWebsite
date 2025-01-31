@@ -1,0 +1,52 @@
+{% extends 'vdashboard.html' %}
+{% block vtitle %} Choose Coordinator {% endblock vtitle %}
+{% block vcontent %}
+
+{% if volunteer.Cordinator == '' or volunteer.Cordinator == '.' %}
+{% if coordinators %}
+<div class="alert alert-danger" role="alert" style="font-size: 15;">
+    Once you choose your Coordinator, no changes will be possible. So please choose correctly!
+</div>
+<form action="{% url 'choose-coordinator' %}" method="GET" id="form">
+    {% csrf_token %}
+    <p style="font-size: 15;">Choose your Coordinator :</p><br><br>
+    <select name="coordinator" required id="coord">
+        <option selected disabled value="Choose" style="font-size: 15;">Choose...</option>
+        {% for coordinator in coordinators %}
+        <option  style="font-size: 15;" value="{{coordinator.cname}}">{{coordinator.cname}}</option>
+        {% endfor %}
+      </select>
+      <br><br>
+      <input type="submit" class="btn btn-success" value="Submit">
+</form>
+<script>
+    const form = document.getElementById('form');
+    const coord = document.getElementById('coord');
+    form.addEventListener('submit', function(event){
+        event.preventDefault();
+        if(coord.value === 'Choose')
+        {
+            alert('Choose a coordinator before you click on the submit button!');
+        }
+        else
+        {
+            var consent = confirm("Are you sure you want to choose " + coord.value + " as your Coordinator?\n\nThis action cannot be undone.");
+            if(consent)
+            {
+                form.method = "POST";
+                form.submit();
+            }
+        }
+    });
+</script>
+{% else %}
+<div class="alert alert-info">
+    There are no coordinators registered for {{volunteer.activity}}.
+</div>
+{% endif %}
+{% else %}
+<div class="alert alert-success" role="success">
+    Hey! Your coordinator is {{volunteer.Cordinator}}
+</div>
+{% endif %}
+{% endblock vcontent %}

@@ -1,0 +1,344 @@
+{% extends 'cdashboard.html' %}
+{% block ctitle %} Sample Report {% endblock ctitle %}
+{% block ccontent %}
+{% load static %}
+
+<input contenteditable="false" type="hidden" value="." id="ans1_Hidden">
+<input contenteditable="false" type="hidden" value="." id="ans2_Hidden">
+<input contenteditable="false" type="hidden" value="." id="ans3_Hidden">
+<input contenteditable="false" type="hidden" value="." id="ans4_Hidden">
+<input contenteditable="false" type="hidden" value="." id="ans5_Hidden">
+<input contenteditable="false" type="hidden" value="." id="ans6_Hidden">
+
+<form method="GET" id="myForm" style="margin-bottom: 20px;">
+    <input type="hidden" value="{{hours}}" id="hours">
+    <input type="hidden" value="{{minutes}}" id="minutes">
+    <h3 class="text-center">Sample Report Filling Page</h3>
+
+
+    <h6 class="text-center"><b><div class="spinner-grow text-success" role="status" style="height: 12px; width: 12px; margin: 2px;"><span class="visually-hidden">Loading...</span>
+    </div>
+    Time left before your session expires:
+    <b id="time_left"></b> minutes</b></h6>
+
+
+    <li style="text-align: left; color:red; font-size: 17px;">
+        <small >
+            Copy-pasting answers is prohibited and is not possible on this website.
+        </small>
+    </li>
+    <li style="text-align: left; color:red; font-size: 17px;">
+        <small >
+            Do not refresh this page or click on the back button. Doing so will delete all your answers and you'll have to type it again.
+        </small>
+    </li>
+    <li style="text-align: left; color:red; font-size: 17px;">
+        <small >
+            You may logout and login again to set your session expiry time back to 250 minutes.
+        </small>
+    </li>
+    <li style="text-align: left; color:red; font-size: 17px;">
+        <small >
+            Refreshing this page will not reset your session expiry time.
+        </small>
+    </li>
+    <li style="text-align: left; color:red; font-size: 17px;">
+        <small >
+            Make sure you submit your report before your session expires.
+        </small>
+    </li>
+    <br>
+
+    <div class="form-outline mb-4" contenteditable="false">
+        <label class="form-label" for="ans1" contenteditable="false">The objectives of the Activity</label>
+        <textarea name="quest1" class="form-control " id="ans1" rows="4" maxlength="999" required
+            style="height: 200px;"></textarea>
+        <div style="text-align:right; padding-right: 20px;" id="countMessage1"><span id="wordCount1">700</span>
+            characters to go!</div>
+        <div style="text-align:right; padding-right: 20px; color:green; display:none;" id="successMessage1">Cheers!
+            You've answered this question!</div>
+    </div>
+
+    <div class="form-outline mb-4" contenteditable="false">
+        <label class="form-label" for="ans2">Write a brief description of the Activity</label>
+        <textarea name="quest2" class="form-control " id="ans2" rows="4" maxlength="999" required
+            style="height: 200px;"></textarea>
+        <div style="text-align:right; padding-right: 20px;" id="countMessage2"><span id="wordCount2">700</span>
+            characters to go!</div>
+        <div style="text-align:right; padding-right: 20px; color:green; display:none;" id="successMessage2">Woo-hoo!
+            You've answered this one too!</div>
+    </div>
+
+    <div class="form-outline mb-4" contenteditable="false">
+        <label class="form-label" for="ans3">Benefits to the Society</label>
+        <textarea name="quest3" class="form-control " id="ans3" rows="4" maxlength="999" required
+            style="height: 200px;"></textarea>
+        <div style="text-align:right; padding-right: 20px;" id="countMessage3"><span id="wordCount3">700</span>
+            characters to go!</div>
+        <div style="text-align:right; padding-right: 20px; color:green; display:none;" id="successMessage3">Good going!
+            Three more questions to go!</div>
+    </div>
+
+    <div class="form-outline mb-4" contenteditable="false">
+        <label class="form-label" for="ans4">Benefits to Self</label>
+        <textarea name="quest4" class="form-control " id="ans4" rows="4" maxlength="999" required
+            style="height: 200px;"></textarea>
+        <div style="text-align:right; padding-right: 20px;" id="countMessage4"><span id="wordCount4">700</span>
+            characters to go!</div>
+        <div style="text-align:right; padding-right: 20px; color:green; display:none;" id="successMessage4">Great buddy!
+            Two more!</div>
+    </div>
+
+    <div class="form-outline mb-4" contenteditable="false">
+        <label class="form-label" for="ans5">Learning, experiences & challenges that you want to share</label>
+        <textarea name="quest5" class="form-control " id="ans5" rows="4" maxlength="999"
+            required style="height: 200px;"></textarea>
+        <div style="text-align:right; padding-right: 20px;" id="countMessage5"><span id="wordCount5">700</span>
+            characters to go!</div>
+        <div style="text-align:right; padding-right: 20px; color:green; display:none;" id="successMessage5">Yippee!
+            You've answered this question!</div>
+    </div>
+
+    <div class="form-outline mb-4" contenteditable="false">
+        <label class="form-label" for="ans6">How did the Social Service Activity help you to shape your empathy</label>
+        <textarea name="quest6" class="form-control " id="ans6" rows="4"
+            maxlength="999" required style="height: 200px;"></textarea>
+        <div style="text-align:right; padding-right: 20px;" id="countMessage6"><span id="wordCount6">700</span>
+            characters to go!</div>
+        <div style="text-align:right; padding-right: 20px; color:green; display:none;" id="successMessage6">Wonderful
+            job! You've answered all the questions!</div>
+    </div>
+
+    <div class="form-outline mb-4" contenteditable="false">
+        <label class="form-label" for="url">Enter a drive link of the photos/videos taken during the activity</label>
+        <input type="text" class="form-control" name="quest7" id="url" required>
+        <small style="color: red;" id="urlError"></small>
+    </div>
+
+    <div class="form-outline mb-2">
+        <label for="guardian_faculty">Choose your Guardian Faculty</label><br>
+        <select name="guardian_faculty" id="guardian_faculty" required>
+            {% for faculty in guardian_faculties %}
+            <option value="{{faculty.name}}">{{faculty.name}}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <small style="color:red;">Choose your correct Guardian Faculty as no change will be permitted later.</small>
+    <br><br>
+
+    <p id="errorMessage" style="display: none; color:red;">
+        Please type the needed number for characters for each question!
+    </p>
+
+    <p id="copiedMessage" style=" display: none; font-weight: bold;"></p>
+
+    <div style="margin-bottom: 20px; display: none;" id="clipboardBox">
+        <p onclick="copyToClipboard()" style="font-weight: bold; cursor: pointer; color: rgb(17, 100, 188);" id="cBtn">Click here to copy to clipboard.</p>
+        <p style="font-size: 15px;">You may click the above link to copy all answers to your clipboard. Incase of any
+            issue while submitting your answers, you can paste these answers in a word file and submit it to your Cordinator and inform about the issue.</p>
+    </div>
+
+    <button type="submit" class="btn btn-success" id="submitBtn"
+        style="background-color: grey; color: white; margin-bottom: 20px;" disabled>
+        Answer all questions to enable submit button
+    </button>
+
+    <div style="display: flex; align-items: center; margin-bottom: 30px;">
+        <div class="loader" id="loader"></div>
+        <span style="display: none; color:green;" id="submitText">&nbsp; &nbsp;Please wait...This may take a few seconds. Do not refresh this page.</span>
+            <br><br><br><br>
+    </div>
+</form>
+
+
+<script>
+
+// Hi there,
+// If you're reading this, then you're probably a clever developer trying to understand why you aren't able to copy-paste answers from ChatGPT or whatsoever..
+// But note that your efforts, by mutilating the code that is preventing you from pasting, will have no outcome.
+// So, with all due respect, we suggest you to close this window immediately and write your report without copy-pasting!
+// Have a good day!
+
+const myForm = document.getElementById("myForm");
+const submitBtn = document.getElementById("submitBtn");
+const errorMessage = document.getElementById("errorMessage");
+const userName = document.getElementById("userName");
+const ans1 = document.getElementById("ans1");
+const ans2 = document.getElementById("ans2");
+const ans3 = document.getElementById("ans3");
+const ans4 = document.getElementById("ans4");
+const ans5 = document.getElementById("ans5");
+const ans6 = document.getElementById("ans6");
+const ans1_Hidden = document.getElementById("ans1_Hidden");
+const ans2_Hidden = document.getElementById("ans2_Hidden");
+const ans3_Hidden = document.getElementById("ans3_Hidden");
+const ans4_Hidden = document.getElementById("ans4_Hidden");
+const ans5_Hidden = document.getElementById("ans5_Hidden");
+const ans6_Hidden = document.getElementById("ans6_Hidden");
+const url = document.getElementById("url");
+const urlError = document.getElementById("urlError");
+const copiedMessage = document.getElementById("copiedMessage");
+const clipboardBox = document.getElementById("clipboardBox");
+const cBtn = document.getElementById("cBtn");
+var wordCount1 = document.getElementById("wordCount1");
+var wordCount2 = document.getElementById("wordCount2");
+var wordCount3 = document.getElementById("wordCount3");
+var wordCount4 = document.getElementById("wordCount4");
+var wordCount5 = document.getElementById("wordCount5");
+var wordCount6 = document.getElementById("wordCount6");
+
+
+var dictionary = {}
+dictionary.ans1 = '1';
+dictionary.ans2 = '2';
+dictionary.ans3 = '3';
+dictionary.ans4 = '4';
+dictionary.ans5 = '5';
+dictionary.ans6 = '6';
+
+
+
+const logged_in_hours = document.getElementById('hours');
+const logged_in_minutes = document.getElementById('minutes');
+const time_left = document.getElementById('time_left');
+function updateTimeLeft() {
+    var currentDate = new Date();
+    var timeLeft = 250 - (currentDate.getHours() * 60 + currentDate.getMinutes() - 330 - logged_in_hours.value * 60 - logged_in_minutes.value);
+    time_left.innerHTML = timeLeft;
+}
+
+setInterval(updateTimeLeft, 60000);
+updateTimeLeft();
+
+
+
+
+function onLoadComplete() {
+    setTimeout(updateCount(document.getElementById('wordCount1'), document.getElementById('ans1'), 'countMessage1', 'successMessage1'), 200);
+    setTimeout(updateCount(document.getElementById('wordCount2'), document.getElementById('ans2'), 'countMessage2', 'successMessage1'), 200);
+    setTimeout(updateCount(document.getElementById('wordCount3'), document.getElementById('ans3'), 'countMessage3', 'successMessage1'), 200);
+    setTimeout(updateCount(document.getElementById('wordCount4'), document.getElementById('ans4'), 'countMessage4', 'successMessage1'), 200);
+    setTimeout(updateCount(document.getElementById('wordCount5'), document.getElementById('ans5'), 'countMessage5', 'successMessage1'), 200);
+    setTimeout(updateCount(document.getElementById('wordCount6'), document.getElementById('ans6'), 'countMessage6', 'successMessage1'), 200);
+};
+window.onload = setTimeout(onLoadComplete, 1000);
+
+
+function enableSubmit() {
+    var c1 = (ans1.value.match(/[a-zA-Z]/g) || []).length;
+    var c2 = (ans2.value.match(/[a-zA-Z]/g) || []).length;
+    var c3 = (ans3.value.match(/[a-zA-Z]/g) || []).length;
+    var c4 = (ans4.value.match(/[a-zA-Z]/g) || []).length;
+    var c5 = (ans5.value.match(/[a-zA-Z]/g) || []).length;
+    var c6 = (ans6.value.match(/[a-zA-Z]/g) || []).length;
+    if (c1 >= 700 && c2 >= 700 && c3 >= 700 && c4 >= 700 && c5 >= 700 && c6 >= 700) {
+        submitBtn.style.backgroundColor = 'green';
+        submitBtn.innerText = 'You have answered all questions. You cannot submit this form as it is just a sample form.';
+        clipboardBox.style.display = 'block';
+    }
+    else {
+        submitBtn.disabled = true;
+        submitBtn.style.backgroundColor = 'grey';
+        submitBtn.innerText = 'Write all answers to enable submit button';
+    }
+};
+
+function checkUrl() {
+    var urlVal = url.value;
+    urlVal = urlVal.trim();
+    if (urlVal === "http://" || urlVal === "https://") {
+        urlError.innerHTML = "Your URL should be a valid URL. It has only http:// or https:// ";
+        return false;
+    }
+    if (!(urlVal.includes("https://") || urlVal.includes("http://"))) {
+        urlError.innerHTML = "Your URL must contain a http:// or https://";
+        return false;
+
+    }
+    if (urlVal.includes(" ") || urlVal.includes(",")) {
+        urlError.innerHTML = "Your URL cannot have a blank space or a comma.";
+        return false;
+    }
+    return true;
+};
+
+
+function copyToClipboard() {
+    var strToBeCopied = 'Objectives of the Activity\n\n' + ans1.value + '\n\nDescription of the Activity\n\n' + ans2.value + '\n\nBenefits to the Society\n\n' + ans3.value + '\n\nBenefits to Self\n\n' + ans4.value + '\n\nLearning, Experiences & Challenges\n\n' + ans5.value + '\n\nHow did it help you to shape your empathy\n\n' + ans6.value;
+
+    const inputElement = document.createElement('input');
+    inputElement.value = strToBeCopied;
+    document.body.appendChild(inputElement);
+    inputElement.focus();
+    inputElement.select();
+
+    navigator.clipboard.writeText(strToBeCopied).then(function () {
+        copiedMessage.innerHTML = 'All your answers have been copied to the clipboard of your device.';
+        copiedMessage.style.color = 'green';
+        copiedMessage.style.display = 'inline-block';
+        setTimeout(() => {
+            copiedMessage.style.display = 'none';
+            cBtn.innerHTML = 'Copy again';
+        }, 2000);
+
+    }).catch(function (err) {
+        copiedMessage.innerHTML = 'There was an error copying your answers to your clipboard';
+        copiedMessage.style.color = 'red';
+        copiedMessage.style.display = 'inline-block';
+        console.error('Unable to copy text to clipboard', err);
+        console.error('Unable to copy text to clipboard', err.value);
+        alert('Please try again. Error occoured while copying: ', err.value);
+    });
+    inputElement.remove();
+};
+
+function submitForm() {
+    myForm.submit();
+}
+
+
+var textareas = document.querySelectorAll('textarea');
+textareas.forEach(function (textarea) {
+    textarea.addEventListener('paste', function (e) {
+        e.preventDefault();
+        alert('Please type the answers in your own words instead of copy-pasting.');
+    });
+});
+
+function updateCount(wordCountParameter, myTextArea, countMessageArea, successMessageArea) {
+    wordCountParameter.innerText = 700 - (myTextArea.value.match(/[a-zA-Z]/g) || []).length;
+    if (parseInt(wordCountParameter.innerHTML) <= 0) {
+        document.getElementById(countMessageArea).style.display = "none";
+        document.getElementById(successMessageArea).style.display = "block";
+    }
+    else {
+        document.getElementById(countMessageArea).style.display = "block";
+        document.getElementById(successMessageArea).style.display = "none";
+    }
+};
+
+textareas.forEach(function (textarea) {
+    textarea.addEventListener('input', function () {
+        var hiddenID = this.id.toString() + '_Hidden'
+        const previousVal = document.getElementById(hiddenID);
+        var diff = this.value.length - previousVal.value.length;
+        if (diff > 15) {
+            this.value = previousVal.value
+            alert('You can enter at max 15 characters at once.');
+        }
+        else {
+            previousVal.value = this.value
+        }
+        var wordCount = 'wordCount' + dictionary[this.id];
+        var countMessage = 'countMessage' + dictionary[this.id];
+        var successMessage = 'successMessage' + dictionary[this.id];
+        updateCount(document.getElementById(wordCount), document.getElementById(this.id), countMessage, successMessage);
+        enableSubmit();
+    })
+});
+
+
+</script>
+
+
+{% endblock ccontent %}

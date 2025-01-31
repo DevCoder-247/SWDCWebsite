@@ -1,0 +1,87 @@
+{% extends 'sdashboard.html' %}
+{% block stitle %} Viewing {{coordinator.cname}} {% endblock stitle %}
+{% block scontent %}
+{% load static %}
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href='{% static "css/ViewVolunteer.css" %}'>
+</head>
+
+<body>
+
+    <form action="{% url 'ApproveCoord' %}" method="POST">
+        {% csrf_token %}
+        <div class="alert alert-warning" role="alert">
+            Viewing data of {{coordinator.cname}}
+          </div>
+
+        <fieldset>
+
+            <div class="form-outline mb-4">
+                <label class="form-label" for="form6Example7">Objective of the Activity (Minimum 50 Words)</label>
+                <textarea name="quest1" class="form-control" id="form6Example7" rows="4" disabled>
+    {{coordinator.ans1}}</textarea>
+            </div>
+
+            <div class="form-outline mb-4">
+                <label class="form-label" for="form6Example7">Description of the Activity (Minimum 100 words)</label>
+                <textarea name="quest2" class="form-control" id="form6Example7" rows="4" disabled>
+    {{coordinator.ans2}}</textarea>
+            </div>
+
+            <div class="form-outline mb-4">
+                <label class="form-label" for="form6Example7">Benefits to Society (Minimum 100 words)</label>
+                <textarea name="quest3" class="form-control" id="form6Example7" rows="4" disabled>
+    {{coordinator.ans3}}</textarea>
+            </div>
+
+            <div class="form-outline mb-4">
+                <label class="form-label" for="form6Example7">Benefits to Self (Minimum 100 Words)</label>
+                <textarea name="quest4" class="form-control" id="form6Example7" rows="4" disabled>
+    {{coordinator.ans4}}</textarea>
+            </div>
+
+            <div class="form-outline mb-4">
+                <label class="form-label" for="form6Example7">Learning, Experiences, challenges that you want to share
+                    (Minimum 100
+                    words)</label>
+                <textarea name="quest5" class="form-control" id="form6Example7" rows="4" disabled>
+    {{coordinator.ans5}}</textarea>
+            </div>
+
+            <div class="form-outline mb-4">
+                <label class="form-label" for="form6Example7">How did it help you to shape your Empathy (Minimum 50
+                    words)</label>
+                <textarea name="quest6" class="form-control" id="form6Example7" rows="4" disabled>
+    {{coordinator.ans6}}</textarea>
+            </div>
+
+            <div class="form-outline mb-4">
+                <label class="form-label" for="form6Example7">Drive link</label>
+                    <textarea name="quest7" class="form-control" id="form6Example7" rows="4" disabled>{{coordinator.url}}</textarea>
+            </div>
+
+            <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                    <label class="input-group-text" for="inputGroupSelect01">Secretary</label>
+                </div>
+                <select class="custom-select" id="inputGroupSelect01">
+                    <option disabled selected value>{{coordinator.Secretary}}</option>
+                </select>
+            </div>
+
+
+
+        </fieldset>
+        <input type="hidden" name="email" value="{{coordinator.email}}">
+        <input class="btn btn sub-btn btn-block mb-4" type="submit" value="Verify">
+    </form>
+    <form action="{% url 'rejectCoord' %}" method="POST">
+        {% csrf_token %}
+        <input type="hidden" name="email" value="{{coordinator.email}}">
+        <input class="btn btn sub-btn btn-block mb-4" style="background-color: red;" type="submit" value="Reject">
+    </form>
+</body>
+{% endblock scontent %}

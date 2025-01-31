@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Coordinator Data</title>
+    <link rel="icon" href="{% static 'auth/images/swdlogo.png' %}">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.4.1/mdb.min.css" rel="stylesheet" />
+</head>
+
+<body>
+    <form action="{% url 'downloadCoordinatorReportView' %}" method="POST" id="form" style="margin: 20px;">
+        {% include 'messages.html' %}
+        {% csrf_token %}
+        <select name="academic_year" required>
+            {% for ay in academic_years %}
+            <option value="{{ay}}">{{ay}}</option>
+            {% endfor %}
+        </select>
+        <br><br>
+        <select name="sem" required>
+            <option value="1">1st Semester</option>
+            <option value="2">2nd Semester</option>
+        </select>
+        <br><br>
+        <p style="padding-bottom: 0px; margin-bottom: 0px; color: red; font-weight: bold; display: none;" id="error">Choose what to filter by</p>
+        <select name="filter_by" id="filter_by">
+            <option value="Choose" disabled selected>Filter By</option>
+            <option value="Activity">Activity</option>
+            <option value="Domain">Domain</option>
+        </select>
+        <br><br>
+        <div id="domain" style="display: none;">
+            <p>Choose a domain</p>
+            <select name="domain">
+                {% for domain in domains%}
+                <option value="{{domain}}">{{domain}}</option>
+                {% endfor %}
+            </select>
+            <br><br>
+        </div>
+        <div id="activity" style="display: none;">
+            <p>Choose an activity</p>
+            <select name="activity" id="activity">
+                {% for activity in activities %}
+                <option value="{{activity.name}}">{{activity.name}}</option>
+                {% endfor %}
+            </select>
+            <br><br>
+        </div>
+        <input type="text" name="secret_code" required placeholder="Secret Code" />
+        <br><br>
+        <div class="form-group">
+            {{ form.captcha }}
+        </div><br>
+    </form>
+    <input class="btn btn-success" type="submit" id="downloadBtn" style="margin-left: 20px;" value="Download" />
+
+    <script>
+        const filter_by = document.getElementById('filter_by')
+        const domain = document.getElementById('domain')
+        const activity = document.getElementById('activity')
+        const downloadBtn = document.getElementById('downloadBtn')
+        const form = document.getElementById('form')
+        const error = document.getElementById('error')
+
+        filter_by.addEventListener('change', function(){
+            if(filter_by.value == 'Activity')
+            {
+                activity.style.display = 'block';
+                domain.style.display = 'none';
+            }
+            else
+            {
+                domain.style.display = 'block';
+                activity.style.display = 'none';
+            }
+        })
+
+        downloadBtn.addEventListener('click', function(){
+            if(filter_by.value != 'Choose')
+            {
+                error.style.display = 'none';
+                form.submit();
+            }
+            else
+            {
+                error.style.display = 'block';
+            }
+        })
+    </script>
+</body>
+
+</html>

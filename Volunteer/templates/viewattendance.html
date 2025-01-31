@@ -1,0 +1,36 @@
+{% extends 'vdashboard.html' %}
+{% block vtitle %} My Attendance {% endblock vtitle %}
+{% block vcontent %}
+{% if not att %}
+<div class="alert alert-info">
+    Your coordinator will be updating your attendance on the website soon :)
+</div>
+{% else %}
+
+<h5>Attendance Percentage : {{percentage}} %</h5>
+<small>Your attendance percentage is one of the factors that will be considered in order for you to clear the Social Services course.</small>
+<br><br>
+
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th scope="col">Date</th>
+            <th scope="col">Attendance</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for date, status in att.items %}
+        <tr>
+            <td>{{date}}</td>
+            {% if status == "Present" %}
+            <td style="color: green;">{{status}}</td>
+            {% else %}
+            <td style="color: red;">{{status}}</td>
+            {% endif %}
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endif %}
+{% endblock vcontent %}

@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+{% load static %}
+
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Manual</title>
+    <link rel="icon" href="{% static 'auth/images/swdlogo.png' %}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+
+    <style>
+        body {
+            margin: 30px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th,
+        td {
+            border: 1px solid black;
+            padding: 8px;
+        }
+        td.center-align {
+            text-align: center;
+        }
+        colgroup {
+            width: 100%;
+        }
+        col.one-fourth {
+            width: 25%;
+        }
+        col.half {
+            width: 50%;
+        }
+        col.mid {
+            width: 33%;
+        }
+    </style>
+</head>
+
+<body>
+    <p style="color: red;"><b>Do not refresh this page. You will have to enter password once again if you do so.</b></p>
+    <h2>In this webpage you will find,</h2>
+
+    <ul>
+        <li>All links of the website.</li>
+        <li>Instructions for registration of Volunteers.</li>
+        <li>Instructions for registration of Coordinators.</li>
+        <li>Instructions for registration of Secretaries.</li>
+    </ul>
+    <h3 style="margin-bottom: 0px;">Below are all the links of the website.</h3>
+
+    <table class="table">
+        <colgroup>
+            <col class="one-fourth">
+            <col class="one-fourth">
+            <col class="half">
+        </colgroup>
+        <thead>
+            <tr>
+                <th scope="col">Name</th>
+                <th scope="col">Link</th>
+                <th scope="col">Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Hosting Platform where this site is hosted</td>
+                <td class="center-align"><a target="_blank" href="https://www.pythonanywhere.com/user/swdc/">Link</a>
+                </td>
+                <td>Username: swdc <br><b>Password: {{pwd0}}</b> <button class="btn btn-success btn-sm" id="0">Copy</button></td>
+            </tr>
+            <tr>
+                <td>Admin Panel of this website</td>
+                <td class="center-align"><a target="_blank" href="https://swdc.pythonanywhere.com/admin/login/">Link</a>
+                </td>
+                <td>Username: swdc <br><b>Password: {{pwd1}}</b> <button class="btn btn-success btn-sm" id="1">Copy</button></td>
+            </tr>
+            <tr>
+                <td>Volunteer Registration</td>
+                <td class="center-align"><a target="_blank" href="{% url 'vreg' %}">Link</a></td>
+                <td>Volunteers of first year can register through this link.</td>
+            </tr>
+            <tr>
+                <td>Coordinator Registration</td>
+                <td class="center-align"><a target="_blank" href="{% url 'creg' %}">Link</a></td>
+                <td>Only Coordinators who had not previously registered last semester can register through this link.
+                </td>
+            </tr>
+            <tr>
+                <td>Secretary Registration</td>
+                <td class="center-align"><a target="_blank" href="{% url 'sreg' %}">Link</a></td>
+                <td>Only Secretaries who had not previously registered last semester can register through this link.
+                </td>
+            </tr>
+            <tr>
+                <td>Allot Coordinators to Volunteers</td>
+                <td class="center-align"><a target="_blank" href="{% url 'allot' %}">Link</a></td>
+                <td>This will allot Coordinators to Volunteers sequentially.<br><b>Password: {{pwd2}} <button class="btn btn-success btn-sm" id="2">Copy</button></b></td>
+            </tr>
+            <tr>
+                <td>Allot Coordinators to Volunteers</td>
+                <td class="center-align"><a target="_blank" href="{% url 'allot-coords-by-sheet' %}">Link</a></td>
+                <td>This will allot Coordinators to Volunteers by the sheet uploaded<br><b>Password: {{pwd3}} <button class="btn btn-success btn-sm" id="3">Copy</button></b></td>
+            </tr>
+            <tr>
+                <td>Download Volunteers' Data</td>
+                <td class="center-align"><a target="_blank" href="{% url 'downloadVolunteerReportView' %}">Link</a></td>
+                <td>Download Volunteers' data (many filters available).<br><b>Password: {{pwd4}} <button class="btn btn-success btn-sm" id="4">Copy</button></b></td>
+            </tr>
+            <tr>
+                <td>Download Coordinators' data</td>
+                <td class="center-align"><a target="_blank" href="{% url 'downloadCoordinatorReportView' %}">Link</a>
+                </td>
+                <td>Download Coordinators' data (many filters available).<br><b>Password: {{pwd5}} <button class="btn btn-success btn-sm" id="5">Copy</button></b></td>
+            </tr>
+            <tr>
+                <td>Test a Certificate</td>
+                <td class="center-align"><a target="_blank" href="{% url 'test-certificate' %}">Link</a></td>
+                <td>Test a newly designed certificate for its alignment.<br><b>Password: {{pwd6}} <button class="btn btn-success btn-sm" id="6">Copy</button></b></td>
+            </tr>
+            <tr>
+                <td>Download Certificates Zip</td>
+                <td class="center-align"><a target="_blank" href="{% url 'download-volunteer-certificates-zip' %}">Link</a></td>
+                <td>Download a zip file containing the certificates of volunteers who've cleared the course. Filter by activity, year & semester.<br><b>Password: {{pwd7}} <button class="btn btn-success btn-sm" id="7">Copy</button></b></td>
+            </tr>
+            <tr>
+                <td>Generate Individual Certificate</td>
+                <td class="center-align"><a target="_blank" href="{% url 'generate-individual-certificate' %}">Link</a>
+                </td>
+                <td>Generate individual certificate activity-wise. You can enter the desired name here and that name will come on the certificate.<br><b>Password: {{pwd8}} <button class="btn btn-success btn-sm" id="8">Copy</button></b></td>
+            </tr>
+            <tr>
+                <td>Fail Volunteers</td>
+                <td class="center-align"><a target="_blank" href="{% url 'fail' %}">Link</a></td>
+                <td>Fail Volunteers (with a variety of filters).<br><b>Password: {{pwd9}} <button class="btn btn-success btn-sm" id="9">Copy</button></b></td>
+            </tr>
+            <tr>
+                <td>Send Emails with custom text</td>
+                <td class="center-align"><a target="_blank" href="{% url 'send-email' %}">Link</a></td>
+                <td>You can choose a variety of email templates and send emails to many mail IDs at the same time<br><b>Password: {{pwd10}} <button class="btn btn-success btn-sm" id="10">Copy</button></b></td>
+            </tr>
+            <tr>
+                <td>View the Report Filling Status of Volunteers, Report Verification Status of Coordinators & Registration Counts of multiple activities at once</td>
+                <td class="center-align"><a target="_blank" href="{% url 'info' %}">Link</a></td>
+                <td>You can select multiple activities and view the detailed number of volunteers who have submitted report, verified report, etc. You can view the volunteer names as well.<br><b>Password: {{pwd11}} <button class="btn btn-success btn-sm" id="11">Copy</button></b></td>
+            </tr>
+
+        </tbody>
+    </table>
+    <h3>Instructions for registration of Volunteers</h3>
+    <ul>
+        <li>Make sure you have set the correct Academic Year and Semester in the Current-Data table. This is very crucial.</li>
+        <li>You may <b>enable</b> the desired activity for registration, and set its current count as 0 and the max count as desired.</li>
+        <li>If an activity is marked <b>true</b> for only males, then females will not be able to register. Same applies vice-versa.</li>
+    </ul>
+
+    <h3>Instructions for registration of Coordinators</h3>
+    <ul>
+        <li>Instructions here.</li>
+    </ul>
+
+    <h3>Instructions for fresh registration of Secretaries</h3>
+    <ul>
+        <li>Instructions here.</li>
+    </ul>
+
+
+    <script>
+        const buttons = document.querySelectorAll('button');
+        const passwords = ['{{pwd0}}', '{{pwd1}}', '{{pwd2}}', '{{pwd3}}', '{{pwd4}}', '{{pwd5}}', '{{pwd6}}', '{{pwd7}}', '{{pwd8}}', '{{pwd9}}', '{{pwd10}}', '{{pwd11}}'];
+        buttons.forEach(button => {
+            button.addEventListener('click', function () {
+                navigator.clipboard.writeText(passwords[button.id]);
+                button.innerHTML = 'Copied to clipboard';
+                setTimeout(() => {
+                    button.innerHTML = 'Copy again';
+                }, 2500);
+            });
+        });
+    </script>
+</body>
+</html>

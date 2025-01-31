@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+  <title>Home</title>
+  <meta content="" name="description">
+  <meta content="" name="keywords">
+  <link rel="icon" href="{% static 'auth/images/swdlogo.png' %}">
+  <link
+    href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Raleway:300,300i,400,400i,500,500i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i"
+    rel="stylesheet">
+  <link href="{% static 'assets/vendor/aos/aos.css' %}" rel="stylesheet">
+  <link href="{% static 'assets/vendor/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
+  <link href="{% static 'assets/vendor/bootstrap-icons/bootstrap-icons.css' %}" rel="stylesheet">
+  <link href="{% static 'assets/vendor/boxicons/css/boxicons.min.css' %}" rel="stylesheet">
+  <link href="{% static 'assets/vendor/glightbox/css/glightbox.min.css' %}" rel="stylesheet">
+  <link href="{% static 'assets/vendor/remixicon/remixicon.css' %}" rel="stylesheet">
+  <link href="{% static 'assets/vendor/swiper/swiper-bundle.min.css' %}" rel="stylesheet">
+  <link href="{% static 'assets/css/style.css' %}" rel="stylesheet">
+</head>
+
+<body>
+  <section id="hero" class="d-flex align-items-center">
+    <div class="container position-relative" data-aos="fade-up" data-aos-delay="50">
+
+      <div class="row justify-content-center">
+        <div class="col-xl-7 col-lg-9 text-center">
+          <h1>The Social Welfare and Development Committee</h1>
+          <h2>Vishwakarma Institute Of Technology, Pune</h2>
+        </div>
+      </div>
+
+      <div class="row icon-boxes">
+
+        <div class="col-md-6 col-lg-3 d-flex align-items-stretch mb-5 mb-lg-0" data-aos="zoom-in" data-aos-delay="200">
+          <div class="icon-box" style=" border: 2px solid black; border-radius: 10px; border-color: rgb(16, 171, 222);">
+            <h4 class="title"><a target="_blank" href="{% url 'login' %}">Login</a></h4>
+            <p class="description">Login as a volunteer, coordinator or as a secretary after you have registered </p>
+          </div>
+        </div>
+
+        <div class="col-md-6 col-lg-3 d-flex align-items-stretch mb-5 mb-lg-0" data-aos="zoom-in" data-aos-delay="300">
+          <div class="icon-box" style=" border: 2px solid black; border-radius: 10px; border-color: rgb(16, 171, 222);">
+            <h4 class="title"><a target="_blank"
+                href="{% url 'vreg' %}">Register as a Volunteer</a></h4>
+            <p class="description">Submit your reports and experiences of the social activity that you have done </p>
+          </div>
+        </div>
+
+        <div class="col-md-6 col-lg-3 d-flex align-items-stretch mb-5 mb-lg-0" data-aos="zoom-in" data-aos-delay="400">
+          <div class="icon-box" style=" border: 2px solid black; border-radius: 10px; border-color: rgb(16, 171, 222);">
+            <h4 class="title"><a target="_blank" href="{% url 'creg' %}">Register as a Coordinator</a></h4>
+            <p class="description">Verify volunteers under you and submit your report to respective Secretaries </p>
+          </div>
+        </div>
+
+        <div class="col-md-6 col-lg-3 d-flex align-items-stretch mb-5 mb-lg-0" data-aos="zoom-in" data-aos-delay="500">
+          <div class="icon-box" style=" border: 2px solid black; border-radius: 10px; border-color: rgb(16, 171, 222);">
+            <h4 class="title"><a target="_blank" href="{% url 'sreg' %}">Register as a Secretary</a></h4>
+            <p class="description">View and verify the work done by the coordinators under you in your domain </p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </section>
+
+  <!-- ======= Counts Section ======= -->
+  <section id="counts" class="counts section-bg">
+    <div class="container">
+
+      <div class="row justify-content-end">
+
+        <div class="col-lg-3 col-md-5 col-6 d-md-flex align-items-md-stretch">
+          <div class="count-box">
+            <span data-purecounter-start="0" data-purecounter-end="{{uCount}}" data-purecounter-duration="2"
+              class="purecounter"></span>
+            <p>Registered Users</p>
+          </div>
+        </div>
+
+        <div class="col-lg-3 col-md-5 col-6 d-md-flex align-items-md-stretch">
+          <div class="count-box">
+            <span data-purecounter-start="0" data-purecounter-end="{{vCount}}" data-purecounter-duration="2"
+              class="purecounter"></span>
+            <p>Volunteers</p>
+          </div>
+        </div>
+
+        <div class="col-lg-3 col-md-5 col-6 d-md-flex align-items-md-stretch">
+          <div class="count-box">
+            <span data-purecounter-start="0" data-purecounter-end="{{cCount}}" data-purecounter-duration="2"
+              class="purecounter"></span>
+            <p>Coordinators</p>
+          </div>
+        </div>
+
+        <div class="col-lg-3 col-md-5 col-6 d-md-flex align-items-md-stretch">
+          <div class="count-box">
+            <span data-purecounter-start="0" data-purecounter-end="{{totalLogins }}" data-purecounter-duration="2"
+              class="purecounter"></span>
+            <p>Log-Ins (Tells how frequently the website is being used)</p>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+  <footer id="footer">
+    <div class="container d-md-flex py-4">
+
+      <div class="me-md-auto text-center text-md-start">
+        <div class="copyright">
+          Stats Last Updated on <strong><span>{{lastUpdated}}</span></strong>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <div id="preloader"></div>
+  <a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i
+      class="bi bi-arrow-up-short"></i></a>
+  <script src="{% static 'assets/vendor/purecounter/purecounter_vanilla.js' %}"></script>
+  <script src="{% static 'assets/vendor/aos/aos.js' %}"></script>
+  <script src="{% static 'assets/vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+  <script src="{% static 'assets/vendor/glightbox/js/glightbox.min.js' %}"></script>
+  <script src="{% static 'assets/vendor/isotope-layout/isotope.pkgd.min.js' %}"></script>
+  <script src="{% static 'assets/vendor/swiper/swiper-bundle.min.js' %}"></script>
+  <script src="{% static 'assets/vendor/php-email-form/validate.js' %}"></script>
+  <script src="{% static 'assets/js/main.js' %}"></script>
+
+
+
+  <script>
+
+    // Scroll to bottom
+    function scrollToBottomWithDelay() {
+      setTimeout(function () {
+        // For modern browsers
+        document.documentElement.scrollTop = document.documentElement.scrollHeight;
+
+        // For older browsers
+        document.body.scrollTop = document.body.scrollHeight;
+      }, 1500); // Delay of 1000 milliseconds (1 second)
+    }
+
+    // Call the scrollToBottomWithDelay function to scroll the page to the bottom with a delay
+    scrollToBottomWithDelay();
+
+
+
+
+
+
+
+    // Scroll to top
+    // Wait for 7 seconds
+    setTimeout(function () {
+      // Scroll to the top of the page
+      window.scrollTo({
+        top: 0,
+        behavior: 'smooth' // Add smooth scrolling effect
+      });
+    }, 6800); // 7 seconds = 7000 milliseconds
+
+
+
+
+
+
+    var div = document.getElementById('footer');
+    var blinkCount = 0;
+
+    var blinkInterval = setInterval(function () {
+      div.style.visibility = (div.style.visibility === 'hidden') ? 'visible' : 'hidden';
+      blinkCount++;
+
+      if (blinkCount === 6) {
+        clearInterval(blinkInterval);
+      }
+    }, 800); // Toggle visibility every 800 milliseconds
+
+
+  </script>
+
+</body>
+
+</html>

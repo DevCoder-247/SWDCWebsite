@@ -1,0 +1,98 @@
+{% extends 'sdashboard.html' %}
+{% block stitle %} {{secretary.activity}}'s Team {% endblock stitle %}
+{% block scontent %}
+
+
+<div class="content-section" style="margin-top:5%">
+    <form method="POST" action="{% url 'add-event' %}">
+        {% csrf_token %}
+        <div class="dashboard-item;">
+            <h2 style="font-weight: bold; font-size: 19px;">Select the activity you want to create an event for</h2>
+            <select style="max-width: 80%;" id="activitySelect" class="activity-select" name="activity" required>
+                {% if secretary.registered_academic_year == current.AcademicYear and secretary.registered_semester == current.Semester %}
+                {% if secretary.activity or secretary.flagshipEvent %}
+                <option value="">Select an activity</option>
+                {% if secretary.activity %}
+                <option value="{{ secretary.activity }}">{{ secretary.activity }}</option>
+                {% endif %}
+                {% if secretary.flagshipEvent %}
+                <option value="{{ secretary.flagshipEvent }}">{{ secretary.flagshipEvent }}
+                </option>
+                {% endif %}
+                {% else %}
+                <option value="">No activities to select</option>
+                {% endif %}
+                {% else %}
+                <option value="">No activities to select</option>
+                {% endif %}
+            </select>
+        </div>
+
+
+        <div style="width: 80%;" class="dashboard-item">
+            <button onclick="fetchDivisions()" type="button"
+                style="font-weight: bold; font-size: 16px; width: 40%">Fetch Divisions</button>
+            <div id="checkbox-container"
+                style="display: flex; gap: 17px; flex-wrap: wrap; font-size: 0.9rem;font-size: 1.7rem;margin-top:10px">
+            </div>
+        </div>
+
+        <div class="dashboard-item">
+            <h2 style="font-weight: bold; font-size: 19px;">Mode of Event</h2>
+            <select style="max-width: 80%;" id="activitySelect" class="activity-select" name="mode" required>
+                <option value="">Select mode of the event</option>
+                <option value="online">Online</option>
+                <option value="offline">Offline</option>
+            </select>
+        </div>
+
+        <div class="dashboard-item">
+            <h2 style="font-weight: bold; font-size: 19px;">Venue of Event</h2>
+            <input type="text" id="map-link" placeholder="Enter the venue"
+                name="venue">
+        </div>
+
+        <div class="dashboard-item">
+                <h2 style="font-weight: bold; font-size: 19px;">Date of Event</h2>
+                <div class="time-display">
+                    <input type="date" id="activity-datetime" style="border: none; outline: none;" name="event-date">
+                </div>
+        </div>
+
+        <div class="dashboard-item">
+            <h2 style="font-weight: bold; font-size: 19px;">Start Time of Event</h2>
+            <div class="time-display">
+                <!-- <div style="width: 15%; margin: 0 auto; display: flex; align-items: left; justify-content: ;border: none;"> -->
+                <input type="time" id="activity-datetime" style="border: none; outline: none;" name="start-time">
+                <!-- </div> -->
+            </div>
+        </div>
+
+        <div class="dashboard-item">
+            <h2 style="font-weight: bold; font-size: 19px;">End Time of Event</h2>
+            <div class="time-display">
+                <!-- <div style="width: 15%; margin: 0 auto; display: flex; align-items: left; justify-content: ;border: none;"> -->
+                <input type="time" id="activity-datetime" style="border: none; outline: none;" name="end-time">
+                <!-- </div> -->
+            </div>
+        </div>
+
+        <div class="dashboard-item">
+            <h2 style="font-weight: bold; font-size: 19px;">Map Link</h2>
+            <input type="url" id="map-link" placeholder="Enter map link" name="map-link">
+        </div>
+
+        <div class="dashboard-item">
+            <h2 style="font-weight: bold; font-size: 19px;">Description</h2>
+            <textarea id="activity-description" rows="4" placeholder="Enter activity description"
+                name="description"></textarea>
+        </div>
+
+        <div class="dashboard-item btns" style="max-width: 80%;">
+            <button style="font-weight: bold; font-size: 16px;" id="update-status-btn">Create
+                Event</button>
+        </div>
+    </form>
+</div>
+
+{% endblock scontent %}

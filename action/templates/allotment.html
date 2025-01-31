@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+{% load static %}
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Allot Coordinators</title>
+    <link rel="icon" href="{% static 'auth/images/swdlogo.png' %}">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.4.1/mdb.min.css" rel="stylesheet" />
+</head>
+
+<body>
+    
+    {% if not activities %}
+    <div class="alert alert-info" role="info">
+        There are no activities for which coordinator allotment is pending! You may want to uncheck the 'allotment_done' field in the activity table to allot coordinators for that activity!
+    </div>
+    {% else %}
+    <form action="{% url 'allot' %}" method="POST" style="margin: 20px">
+        {% csrf_token %}
+	{% include 'messages.html' %}
+        <p>This will allot sequentially, the coordinators registered in this sem & AY to the volunteers registered in this sem & AY. If V1, V2, V3, V4 & V5 are volunteers and C1, C2 & C3 are coordinators. Then,</p>
+        <p>V1 -> C1</p>
+        <p>V2 -> C2</p>
+        <p>V3 -> C3</p>
+        <p>V4 -> C1</p>
+        <p>V5 -> C2</p>
+        <label for="activity">Select Activity:</label>
+        <select name="activity" id="activity" required>
+            <option value="Select-..." default disabled>Select...</option>
+            {% for activity in activities %}
+            <option value="{{activity.name}}">{{activity.name}}</option>
+            {% endfor %}
+        </select>
+        <br>
+        <br>
+        <input type="text" name="secret_code" required placeholder="Secret Code" />
+        <br><br>
+        <div class="form-group">
+            {{ form.captcha }}
+        </div><br>
+        <input class="btn btn-success" type="submit" value="Submit">
+    </form>
+    {% endif %}
+</body>
+
+</html>

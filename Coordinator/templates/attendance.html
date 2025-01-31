@@ -1,0 +1,544 @@
+{% extends 'cdashboard.html' %}
+{% block ctitle %} Mark Attendance {% endblock ctitle %}
+{% block ccontent %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css">
+<style>
+    table {
+         width: 100%;
+        border-collapse: collapse;
+    }
+    th, td {
+        text-align: center;
+        padding: 8px;
+    }
+    colgroup {
+        width: 100%;
+    }
+    col.first-column {
+        width: 25%;
+    }
+    col.second-column {
+        width: 33%;
+    }
+    col.third-column {
+        width: 50%;
+    }
+}
+</style>
+
+<!-- Today's attendance for Social Services Event  -->
+<div class="accordion" id="accordionExample">
+    {% if coordinator.activity != 'not_chosen' and coordinator.marked_IN_GP2 == False %}
+    <div class="accordion-item">
+        <h2 class="accordion-header">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                data-bs-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
+                {{coordinator.activity}}'s IN Attendance for today ({{date}})
+            </button>
+        </h2>
+        <div id="collapseOne" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
+            <div class="accordion-body">
+                {% if volunteers_done_GP2 %}
+                <form action="{% url 'mark-GP2-in-attendance' %}" method="POST" id="GP2_Form1">
+                    {% csrf_token %}
+                    {% for volunteer in volunteers_done_GP2 %}
+                    <div class="form-check" style="cursor: pointer;">
+                        <label><b>{{volunteer.vname}}</b></label>
+                        <br>
+                        <select name="{{volunteer.email}}">
+                            <option value="Choose" selected disabled>Choose</option>
+                            <option value="None">None</option>
+                            <option value="Present" style="color: green; font-weight: bold;">Present</option>
+                            <option value="Absent" style="color: red; font-weight: bold;">Absent</option>
+                        </select>
+                    </div>
+                    <br />
+                    {% endfor %}
+                </form>
+                <div class="btnContainer" style="display: flex; justify-content: center;">
+                    <input type="submit" class="btn btn-success ml-3" value="Submit Attendance" id="GP2Btn1"/>
+                </div>
+                {% else %}
+                    <p>You have no volunteers under you doing {{coordinator.activity}} activity!</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    <script>
+        const GP2_Form1 = document.getElementById('GP2_Form1');
+        const GP2Btn1 = document.getElementById('GP2Btn1');
+        GP2Btn1.addEventListener('click', function(event) {
+            const selectFields = GP2_Form1.querySelectorAll('select');
+            var counter = 0;
+            for (let i = 0; i < selectFields.length; i++) {
+                const selectField = selectFields[i];
+                if (selectField.value === 'Choose') {
+                    counter++;
+                }
+            }
+            if(counter === 0)
+                GP2_Form1.submit();
+            else
+                alert('You have not choosen the IN attendance for ' + counter.toString() + ' volunteers.')
+        });
+    </script>
+    <br>
+    {% endif %}
+
+
+
+    {% if coordinator.activity != 'not_chosen' and coordinator.marked_IN_GP2 and coordinator.marked_attendance_GP2 == False %}
+    <small style="color: red;">Please note that in order to complete the attendance process, you will have to mark OUT attendance also.</small>
+        <div class="card" id="GP2OutControl" style="cursor: pointer;">
+            <div class="card-body">
+                {{coordinator.activity}}'s OUT Attendance for today ({{date}})
+            </div>
+        </div>
+        <div id="GP2Out" style="display: none;">
+            <form action="{% url 'mark-GP2-out-attendance' %}" method="POST" id="GP2_Form2">
+                {% csrf_token %}
+                <table class="table table-bordered">
+                    <colgroup>
+                        <col class="first-column">
+                        <col class="first-column">
+                        <col class="first-column">
+                        <col class="first-column">
+                    </colgroup>
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>IN</th>
+                            <th>OUT</th>
+                            <th>Final</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                {% for volunteer in volunteers_done_GP2 %}
+                <tr>
+                    <td>{{volunteer.vname}}</td>
+                    <td>
+                        {% if volunteer.marked_IN_attendance %}
+                        <p style="color: green; font-weight: bold;" id="{{volunteer.prn}}" class="{{volunteer.email}}">Present</p>
+                        {% elif volunteer.marked_IN_attendance == False %}
+                        <p style="color: red; font-weight: bold;" id="{{volunteer.prn}}" class="{{volunteer.email}}">Absent</p>
+                        {% else %}
+                        <p id="{{volunteer.prn}}" class="{{volunteer.email}}">Not marked anything</p>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <select name="{{volunteer.email}}" id="{{volunteer.email}}" required>
+                            <option value="Choose" selected disabled>Choose</option>
+                            <option value="None">None</option>
+                            <option value="Present" style="color: green; font-weight: bold;">Present</option>
+                            <option value="Absent" style="color: red; font-weight: bold;">Absent</option>
+                        </select>
+                    </td>
+                    <td class="{{volunteer.prn}}">None</td>
+                </tr>
+                {% endfor %}
+                </tbody>
+                </table>
+            </form>
+            <div class="btnContainer" style="display: flex; justify-content: center;">
+                <input type="submit" class="btn btn-success" id="GP2SubmitBtn" value="Submit Attendance" style="width:200px;"/>
+            </div>
+        </div>
+        <script>
+            const GP2OutControl = document.getElementById('GP2OutControl');
+            const GP2Out = document.getElementById('GP2Out');
+            GP2OutControl.addEventListener('click', function(){
+                if(GP2Out.style.display == 'none')
+                GP2Out.style.display = 'block';
+                else
+                GP2Out.style.display = 'none';
+            })
+
+            const attendanceStatusGP2 = document.querySelectorAll('select[id]');
+
+            attendanceStatusGP2.forEach(function(volunteer){
+                volunteer.addEventListener('change', function(){
+                    const inAttendance = document.getElementsByClassName(volunteer.id);
+                    var INAttendanceStatus = inAttendance[0].innerHTML;
+                    const finalAttendance = document.getElementsByClassName(inAttendance[0].id);
+                    var OUTAttendanceStatus = volunteer.value;
+
+                    if(INAttendanceStatus === 'Present' && OUTAttendanceStatus === 'Present')
+                    {
+                        finalAttendance[0].innerHTML = 'Present';
+                        finalAttendance[0].style.backgroundColor  = 'lightgreen';
+                    }
+                    else if(INAttendanceStatus === 'Present' && OUTAttendanceStatus === 'Absent')
+                    {
+                        finalAttendance[0].innerHTML = 'Absent';
+                        finalAttendance[0].style.backgroundColor  = 'lightcoral';
+                    }
+                    else if(INAttendanceStatus === 'Present' && OUTAttendanceStatus === 'None')
+                    {
+                        finalAttendance[0].innerHTML = 'Nothing will be marked';
+                        finalAttendance[0].style.backgroundColor  = 'lightgrey';
+                    }
+                    else if(INAttendanceStatus === 'Absent' && OUTAttendanceStatus === 'Absent')
+                    {
+                        finalAttendance[0].innerHTML = 'Absent';
+                        finalAttendance[0].style.backgroundColor  = 'lightcoral';
+                    }
+                    else if(INAttendanceStatus === 'Absent' && OUTAttendanceStatus === 'Present')
+                    {
+                        finalAttendance[0].innerHTML = 'Absent';
+                        finalAttendance[0].style.backgroundColor  = 'lightcoral';
+                    }
+                    else if(INAttendanceStatus === 'Absent' && OUTAttendanceStatus === 'None')
+                    {
+                        finalAttendance[0].innerHTML = 'Nothing will be marked';
+                        finalAttendance[0].style.backgroundColor  = 'lightgrey';
+                    }
+                    else if(INAttendanceStatus === 'Not marked anything' && OUTAttendanceStatus === 'Absent')
+                    {
+                        finalAttendance[0].innerHTML = 'Attendance Will Not Be Marked if Absent';
+                        finalAttendance[0].style.backgroundColor  = 'lightgrey';
+                    }
+                    else if(INAttendanceStatus === 'Not marked anything' && OUTAttendanceStatus === 'Present')
+                    {
+                        finalAttendance[0].innerHTML = 'Attendance Will Not Be Marked even if Present';
+                        finalAttendance[0].style.backgroundColor  = 'lightgrey';
+                    }
+                    else if(INAttendanceStatus === 'Not marked anything' && OUTAttendanceStatus === 'None')
+                    {
+                        finalAttendance[0].innerHTML = 'Attendance Will Not Be Marked';
+                        finalAttendance[0].style.backgroundColor  = 'lightgrey';
+                    }
+                })
+            })
+            const GP2_Form2 = document.getElementById('GP2_Form2');
+            const GP2SubmitBtn = document.getElementById('GP2SubmitBtn');
+            GP2SubmitBtn.addEventListener('click', function(event) {
+                console.log(true)
+                const selectFields = GP2_Form2.querySelectorAll('select[id]');
+                var counter = 0;
+                for (let i = 0; i < selectFields.length; i++) {
+                    const selectField = selectFields[i];
+                    if (selectField.value === 'Choose') {
+                        counter++;
+                    }
+                }
+                if(counter === 0)
+                    GP2_Form2.submit();
+                else
+                    alert('You have not choosen the OUT attendance for ' + counter.toString() + ' volunteers.')
+            });
+        </script>
+    <br>
+    {% endif %}
+
+    {% if coordinator.marked_attendance_GP2 == True %}
+    <br>
+    <div class="alert alert-info" role="info">
+        Hurray! Attendance for {{coordinator.activity}}'s volunteers has been marked for today!
+    </div>
+    <br>
+    {% endif %}
+
+
+    <!-- Today's attendance for Flagship Event  -->
+
+
+    {% if coordinator.flagshipEvent != 'not_chosen' and coordinator.marked_IN_FE == False %}
+    <div class="accordion-item">
+        <h2 class="accordion-header">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                {{coordinator.flagshipEvent}}'s IN Attendance for today ({{date}})
+            </button>
+        </h2>
+        <div id="collapseTwo" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
+            <div class="accordion-body">
+                {% if volunteers_done_FE %}
+                <form action="{% url 'mark-FE-in-attendance' %}" method="POST" id="FE_Form1">
+                    {% csrf_token %}
+                    {% for volunteer in volunteers_done_FE %}
+                    <div class="form-check" style="cursor: pointer;">
+                        <label><b>{{volunteer.vname}}</b></label>
+                        <br>
+                        <select name="{{volunteer.email}}">
+                            <option value="Choose" selected disabled>Choose</option>
+                            <option value="None">None</option>
+                            <option value="Present" style="color: green; font-weight: bold;">Present</option>
+                            <option value="Absent" style="color: red; font-weight: bold;">Absent</option>
+                        </select>
+                    </div>
+                    <br />
+                    {% endfor %}
+                </form>
+                    <div class="btnContainer" style="display: flex; justify-content: center;">
+                        <input type="submit" class="btn btn-success" value="Submit Attendance" id="FEBtn1"/>
+                    </div>
+                {% else %}
+                <div class="alert alert-danger" role="danger">
+                    You have no volunteers under you doing {{coordinator.flagshipEvent}} activity!
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    <script>
+        const FE_Form1 = document.getElementById('FE_Form1');
+        const FEBtn1 = document.getElementById('FEBtn1');
+        FEBtn1.addEventListener('click', function(event) {
+            const selectFields = FE_Form1.querySelectorAll('select');
+            var counter = 0;
+            for (let i = 0; i < selectFields.length; i++) {
+                const selectField = selectFields[i];
+                if (selectField.value === 'Choose') {
+                    counter++;
+                }
+            }
+            if(counter === 0)
+                FE_Form1.submit();
+            else
+                alert('You have not choosen the IN attendance for ' + counter.toString() + ' volunteers.')
+        });
+    </script>
+    <br>
+    {% endif %}
+
+
+
+    {% if coordinator.flagshipEvent != 'not_chosen' and coordinator.marked_IN_FE and coordinator.marked_attendance_FE == False %}
+    <small style="color: red;">Please note that in order to complete the attendance process, you will have to mark OUT attendance also.</small>
+        <div class="card" id="FEOutControl" style="cursor: pointer;">
+            <div class="card-body">
+                {{coordinator.flagshipEvent}}'s OUT Attendance for today ({{date}})
+            </div>
+        </div>
+
+        <div id="FEOut" style="display: none;">
+            <form action="{% url 'mark-FE-out-attendance' %}" method="POST" id="FE_Form2">
+                {% csrf_token %}
+                <table class="table table-bordered">
+                    <colgroup>
+                        <col class="first-column">
+                        <col class="first-column">
+                        <col class="first-column">
+                        <col class="first-column">
+                    </colgroup>
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>IN</th>
+                            <th>OUT</th>
+                            <th>Final</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                {% for volunteer in volunteers_done_FE %}
+                <tr>
+                    <td>{{volunteer.vname}}</td>
+                    <td>
+                        {% if volunteer.marked_IN_attendance %}
+                        <p style="color: green; font-weight: bold;" id="{{volunteer.prn}}" class="{{volunteer.email}}">Present</p>
+                        {% elif volunteer.marked_IN_attendance == False %}
+                        <p style="color: red; font-weight: bold;" id="{{volunteer.prn}}" class="{{volunteer.email}}">Absent</p>
+                        {% else %}
+                        <p id="{{volunteer.prn}}" class="{{volunteer.email}}">Not marked anything</p>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <select name="{{volunteer.email}}" id="{{volunteer.email}}" required>
+                            <option value="Choose" selected disabled>Choose</option>
+                            <option value="None">None</option>
+                            <option value="Present" style="color: green; font-weight: bold;">Present</option>
+                            <option value="Absent" style="color: red; font-weight: bold;">Absent</option>
+                        </select>
+                    </td>
+                    <td class="{{volunteer.prn}}">None</td>
+                </tr>
+                {% endfor %}
+                </tbody>
+                </table>
+            </form>
+            <div class="btnContainer" style="display: flex; justify-content: center;">
+                <input type="submit" class="btn btn-success" value="Submit Attendance" id="FESubmitBtn" style="width:200px;"/>
+            </div>
+        </div>
+        <script>
+            const FEOutControl = document.getElementById('FEOutControl');
+            const FEOut = document.getElementById('FEOut');
+            FEOutControl.addEventListener('click', function(){
+                if(FEOut.style.display == 'none')
+                    FEOut.style.display = 'block';
+                else
+                    FEOut.style.display = 'none';
+            })
+
+            const attendanceStatus = document.querySelectorAll('select[id]');
+
+            attendanceStatus.forEach(function(volunteer){
+                volunteer.addEventListener('change', function(){
+                    const inAttendance = document.getElementsByClassName(volunteer.id);
+                    var INAttendanceStatus = inAttendance[0].innerHTML;
+                    const finalAttendance = document.getElementsByClassName(inAttendance[0].id);
+                    var OUTAttendanceStatus = volunteer.value;
+
+                    if(INAttendanceStatus === 'Present' && OUTAttendanceStatus === 'Present')
+                    {
+                        finalAttendance[0].innerHTML = 'Present';
+                        finalAttendance[0].style.backgroundColor  = 'lightgreen';
+                    }
+                    else if(INAttendanceStatus === 'Present' && OUTAttendanceStatus === 'Absent')
+                    {
+                        finalAttendance[0].innerHTML = 'Absent';
+                        finalAttendance[0].style.backgroundColor  = 'lightcoral';
+                    }
+                    else if(INAttendanceStatus === 'Present' && OUTAttendanceStatus === 'None')
+                    {
+                        finalAttendance[0].innerHTML = 'Nothing will be marked';
+                        finalAttendance[0].style.backgroundColor  = 'lightgrey';
+                    }
+                    else if(INAttendanceStatus === 'Absent' && OUTAttendanceStatus === 'Absent')
+                    {
+                        finalAttendance[0].innerHTML = 'Absent';
+                        finalAttendance[0].style.backgroundColor  = 'lightcoral';
+                    }
+                    else if(INAttendanceStatus === 'Absent' && OUTAttendanceStatus === 'Present')
+                    {
+                        finalAttendance[0].innerHTML = 'Absent';
+                        finalAttendance[0].style.backgroundColor  = 'lightcoral';
+                    }
+                    else if(INAttendanceStatus === 'Absent' && OUTAttendanceStatus === 'None')
+                    {
+                        finalAttendance[0].innerHTML = 'Nothing will be marked';
+                        finalAttendance[0].style.backgroundColor  = 'lightgrey';
+                    }
+                    else if(INAttendanceStatus === 'Not marked anything' && OUTAttendanceStatus === 'Absent')
+                    {
+                        finalAttendance[0].innerHTML = 'Attendance Will Not Be Marked if Absent';
+                        finalAttendance[0].style.backgroundColor  = 'lightgrey';
+                    }
+                    else if(INAttendanceStatus === 'Not marked anything' && OUTAttendanceStatus === 'Present')
+                    {
+                        finalAttendance[0].innerHTML = 'Attendance Will Not Be Marked even if Present';
+                        finalAttendance[0].style.backgroundColor  = 'lightgrey';
+                    }
+                    else if(INAttendanceStatus === 'Not marked anything' && OUTAttendanceStatus === 'None')
+                    {
+                        finalAttendance[0].innerHTML = 'Attendance Will Not Be Marked';
+                        finalAttendance[0].style.backgroundColor  = 'lightgrey';
+                    }
+                })
+            })
+
+            const myForm2 = document.getElementById('FE_Form2');
+            const FESubmitBtn = document.getElementById('FESubmitBtn');
+            FESubmitBtn.addEventListener('click', function(event) {
+                console.log(true)
+                const selectFields = myForm2.querySelectorAll('select[id]');
+                var counter = 0;
+                for (let i = 0; i < selectFields.length; i++) {
+                    const selectField = selectFields[i];
+                    if (selectField.value === 'Choose') {
+                        counter++;
+                    }
+                }
+                if(counter === 0)
+                    myForm2.submit();
+                else
+                    alert('You have not choosen the OUT attendance for ' + counter.toString() + ' volunteers.')
+            });
+        </script>
+    {% endif %}
+
+    {% if coordinator.marked_attendance_FE == True %}
+    <br>
+    <div class="alert alert-info" role="info">
+        Hurray! Attendance for {{coordinator.flagshipEvent}}'s volunteers has been marked for today!
+    </div>
+    <br>
+    {% endif %}
+</div>
+<br>
+
+<!-- Previous attendance for Social Services Event  -->
+<div class="accordion" id="accordionExample">
+    {% if coordinator.activity != 'not_chosen' %}
+    <form class="accordion-item pt-1" action="{% url 'prev-social-attendance' %}" method="POST" id="GP2_Prev">
+        {% csrf_token %}
+        <h2 class="accordion-header">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseOne">
+                Mark {{coordinator.activity}}'s Attendance by date
+            </button>
+        </h2>
+        <div id="collapseThree" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
+            <div class="accordion-body">
+                {% if volunteers_done_GP2 %}
+                <div class="mb-3 ps-4">
+                    <label for="GP2date">Choose a date</label>
+                    <input type="date" id="GP2date" name="date" max="{{maxDate}}" required />
+                </div>
+                {% for volunteer in volunteers_done_GP2 %}
+                <div class="form-check" style="cursor: pointer;">
+                    <label><b>{{volunteer.vname}}</b></label>
+                    <br>
+                    <select name="{{volunteer.email}}">
+                        <option value="None">Don't mark anything</option>
+                        <option value="Present" style="color: green; font-weight: bold;">Present</option>
+                        <option value="Absent" style="color: red; font-weight: bold;">Absent</option>
+                    </select>
+                </div>
+                <br />
+                {% endfor %}
+                <input type="submit" class="btn btn-success ml-3" value="Submit Attendance" />
+                {% else %}
+                <div class="alert alert-danger" role="danger">
+                    You have no volunteers under you doing {{coordinator.activity}} activity!
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </form>
+    {% endif %}
+
+
+    <!-- Previous attendance for Flagship Event  -->
+
+    {% if coordinator.flagshipEvent != 'not_chosen' %}
+    <form class="accordion-item pt-1" action="{% url 'prev-FE-attendance' %}" method="POST" id="FE_Prev">
+        {% csrf_token %}
+        <h2 class="accordion-header">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                data-bs-target="#collapseFour" aria-expanded="false" aria-controls="collapseTwo">
+                Mark {{coordinator.flagshipEvent}}'s Attendance by date
+            </button>
+        </h2>
+        <div id="collapseFour" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
+            <div class="accordion-body">
+                {% if volunteers_done_FE %}
+                <div class="mb-3 ps-4">
+                    <label for="FEdate">Choose a date</label>
+                    <input type="date" id="FEdate" name="date" max="{{maxDate}}" required />
+                </div>
+                {% for volunteer in volunteers_done_FE %}
+                <div class="form-check" style="cursor: pointer;">
+                    <label><b>{{volunteer.vname}}</b></label>
+                    <br>
+                    <select name="{{volunteer.email}}" required>
+                        <option value="None">Don't mark anything</option>
+                        <option value="Present" style="color: green; font-weight: bold;">Present</option>
+                        <option value="Absent" style="color: red; font-weight: bold;">Absent</option>
+                    </select>
+                </div>
+                <br />
+                {% endfor %}
+                <input type="submit" class="btn btn-success ml-3" value="Submit Attendance"/>
+                {% else %}
+                <div class="alert alert-danger" role="danger">
+                    You have no volunteers under you doing {{coordinator.flagshipEvent}} activity!
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </form>
+    {% endif %}
+</div>
+
+{% endblock ccontent %}

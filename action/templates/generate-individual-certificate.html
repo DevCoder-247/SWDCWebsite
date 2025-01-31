@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Generate Certificate</title>
+    <link rel="icon" href="{% static 'auth/images/swdlogo.png' %}">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.4.1/mdb.min.css" rel="stylesheet" />
+    <style>
+        body {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 30px;
+        }
+        form,
+        p {
+            text-align: center;
+            margin: 0;
+        }
+    </style>
+</head>
+
+<body>
+    <form action="{% url 'generate-individual-certificate' %}" id="myForm" method="POST">
+        {% include 'messages.html' %}
+        {% csrf_token %}
+        <b>This will generate a single certificate for the activity you choose and the volunteer name you enter below.</b> <br>
+        <b>The same activity will have different certificate template each year and semester.</b> <br>
+	<b>So you must choose an academic year & semester for which you need the certificate.</b> <br>
+
+	<select name="act" class="form-control mb-3">
+            {% for activity in activities %}
+            <option value="{{activity.name}}">{{activity.name}}</option>
+            {% endfor %}
+        </select>
+
+	<select name="year" class="form-control mb-3">
+            {% for year in academic_years %}
+            <option value="{{year}}">Academic Year {{year}}</option>
+            {% endfor %}
+        </select>
+
+	<select name="sem" class="form-control mb-3">
+            <option value="1">Semester 1</option>
+            <option value="2">Semester 2</option>
+        </select>
+        <input class="form-control" type="text" name="name" required placeholder="Enter the name that you want on the certificate" /><br>
+        <input class="form-control" type="text" name="secret_code" required placeholder="Secret Code" /><br>
+        <div class="form-group">
+                {{ form.captcha }}
+            </div><br>
+        <input class="form-control btn btn-success" id="submitBtn" type="submit" value="Download">
+            <span style=" color:green;" id="text">After you click the download button, it may take upto 10 seconds to begin downloading.</span>
+    </form>
+</body>
+</html>

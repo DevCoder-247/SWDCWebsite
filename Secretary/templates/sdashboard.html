@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Secretary</title>
+    <link rel="icon" type="image/png" href="https://swd.vit.edu/img/swdlogo3.png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.2/css/all.min.css">
+   
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/boxicons@latest/css/boxicons.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css">
+    <script src="https://kit.fontawesome.com/c8ffd88059.js"></script>
+    <link rel="stylesheet" href="{% static 'style.css'%}">
+    <link rel="stylesheet" href="{% static 'style_secretary.css' %}">
+</head>
+
+<body>
+    <header class="header" style="width: 100%;">
+        <section class="flex">
+            <a href="" class="logo">Hello, {{user.username}} !!</a>
+            <div class="icons">
+                <div id="menu-btn" class="fas fa-bars"></div>
+            </div>
+            <div class="profile">
+                <img src="{% if user.profile.image %}{{ user.profile.image.url }}{% else %}{% static 'images/default-profile.jpg' %}{% endif %}"
+                    class="image" alt="user-image">
+                <h3 class="name"></h3>
+                <p class="role"></p>
+            </div>
+        </section>
+    </header>
+
+    <div class="side-bar">
+        <div id="close-btn">
+            <i class="fas fa-times"></i>
+        </div>
+        <div class="profile">
+            <img src="{% if user.profile.image %}{{ user.profile.image.url }}{% else %}{% static 'images/default-profile.jpg' %}{% endif %}"
+                class="image" alt="">
+            <h3 class="name"></h3>
+            <p class="role"></p>
+        </div>
+
+        <nav class="navbar">
+            <a href="{% url 'SDashboard' %}"><i class="fas fa-home"></i><span>Home</span></a>
+            <a href="{% url 'add-event' %}"><i class="fas fa-calendar-alt"></i><span>Add Event</span></a>
+            <a href="{% url 'show_events' %}"><i class="fas fa-calendar-check"></i><span>Show Events</span></a>
+
+
+            <a href="{% url 'coord-details' %}"><i class="bx bxs-universal-access nav_icon"></i><span>My Team</span></a>
+            <a href="{% url 's_my_activity' %}"><i class="bx bxs-objects-vertical-bottom nav_icon"></i><span>My Activity</span></a>
+
+
+            <a href="{% url 'download_attendance' %}"><i class="fas fa-user-check"></i><span>View Attendance</span></a>
+            <a href="{% url 'fail-volunteers' %}"><i class="fas fa-user-times"></i><span>Fail Volunteers</span></a>
+            <a href="{% url 'coord-reports' %}"><i class="fas fa-file-text"></i><span>Coordinator's Reports</span></a>
+            <a href="{% url 'sresetpass' %}"><i class="fas fa-user"></i><span>Change Password</span></a>
+            
+            <a href="{% url 's_contact_us' %}"><i class="fas fa-headset"></i><span>Contact us</span></a>
+            <form id="logoutForm" method="POST" action="{% url 'logout' %}">
+                {% csrf_token %}
+                <button type="submit" id="logoutButton" class="logout-btn"
+                    style="position: absolute; top: 85%; left: 30%;">
+                    <i class="fas fa-sign-out-alt" style="margin-right: 8px;"></i> Logout
+                </button>
+            </form>
+        </nav>
+    </div>
+
+    <section class="courses">
+        <div class="box-container">
+            <div class="wrapper">
+
+                <!-- Main Content -->
+                <div id="mainContent" class="content">
+                    {% include 'messages.html' %}
+                    {% if secretary.password_changed == False %}
+                    <div class="alert alert-danger" role="alert">
+                        For security reasons, we advise you to change your password <a href="{% url 'sresetpass' %}"> here</a>
+                    </div>
+                    {% endif %}
+                    {% block scontent %}
+                    <header id="head">
+                        Secretary Dashboard
+                    </header>
+
+                    <div class="content-section">
+                        <div class="D_content">
+                            <h1 style="font-size: 19px; font-weight: bold;">Welcome To SW&D's Website
+                            </h1>
+                            <p style="font-size: 16px;">We work for the betterment<br>of the society</p>
+                        </div>
+                    </div>
+                    {% endblock scontent %}
+
+                </div>
+            </div>
+        </div>
+
+        <script>
+            function showContent(contentToShow) {
+                editModal.style.display = "none";
+                contentToShow.style.display = "block";
+            }
+
+            function openModal(eventId, venue, mapLink, startTime, endTime) {
+                const modal = document.getElementById("editModal");
+                modal.style.display = "flex";
+                document.getElementById("id").value = eventId;
+                document.getElementById("venue").value = venue;
+                document.getElementById("mapLink").value = mapLink;
+                document.getElementById("startTime").value = startTime;
+                document.getElementById("endTime").value = endTime;
+                // console.log("Editing Event ID:", eventId);
+            }
+
+            function closeModal() {
+                const modal = document.getElementById("editModal");
+                modal.style.display = "none";
+            }
+
+            // Sidebar Toggle Functionality
+            let sideBar = document.querySelector('.side-bar');
+            let menuBtn = document.getElementById('menu-btn');
+            let closeBtn = document.getElementById('close-btn');
+            let body = document.body;
+
+            // Toggle Sidebar on Menu Button Click
+            menuBtn?.addEventListener('click', () => {
+                sideBar.classList.toggle('active'); // Show/hide sidebar
+                body.classList.toggle('active'); // Adjust main content
+            });
+
+            // Close Sidebar on Close Button Click
+            closeBtn?.addEventListener('click', () => {
+                sideBar.classList.remove('active'); // Hide sidebar
+                body.classList.remove('active'); // Reset main content
+            });
+
+            // Close Sidebar when window is resized (optional, to handle desktop/mobile transitions)
+            window.addEventListener('resize', () => {
+                if (window.innerWidth >= 1200) {
+                    sideBar.classList.remove('active');
+                    body.classList.remove('active');
+                }
+            });
+
+            document.getElementById('logoutButton').addEventListener('click', function () {
+                e.preventDefault();
+                setTimeout(() => {
+                    document.getElementById('logoutForm').submit();
+                }, 1000);
+            });
+
+        </script>
+
+        <script>
+            function generateQR() {
+                const activity = document.getElementById('activitySelect').value;
+                if (activity) {
+                    // Add the generate a QR code here
+                    // For this example, we're just showing the QR code section
+                    document.getElementById('qrCodeSection').style.display = 'block';
+                    // You would replace this with actual QR code generation
+                    // document.getElementById('qrCodeImage').src = /api/placeholder/200/200?text=${activity};
+                } else {
+                    alert('Please select an activity first.');
+                }
+            }
+
+            function resetSelection() {
+                document.getElementById('activitySelect').value = '';
+                document.getElementById('qrCodeSection').style.display = 'none';
+            }
+
+            //Fetching activity divisions from backend
+            function getCSRFToken() {
+                return document.querySelector('[name=csrfmiddlewaretoken]').value;
+            }
+
+            const fetchDivisions = async () => {
+                const csrfToken = getCSRFToken();
+
+                try {
+                    const response = await fetch('fetch-div/', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRFToken': csrfToken,
+                        },
+                        body: JSON.stringify({})
+                    });
+
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! Status: ${response.status}`);
+                    }
+
+                    const data = await response.json();
+                    const list = data.divisions;
+
+                    // Get the container div
+                    const container = document.getElementById('checkbox-container');
+                    container.innerHTML = '';
+
+                    // Create checkboxes dynamically
+                    list.forEach(item => {
+                        const checkboxWrapper = document.createElement('div');
+                        //   checkboxWrapper.className = 'checkbox-wrapper';
+                        checkboxWrapper.style.display = 'flex';
+                        checkboxWrapper.style.justifyContent = 'start';
+                        checkboxWrapper.style.width = '18%';
+                        checkboxWrapper.style.marginBottom = '8px';
+
+                        const checkbox = document.createElement('input');
+                        checkbox.type = 'checkbox';
+                        checkbox.id = `${item}`;
+                        checkbox.name = 'divisions';
+                        checkbox.value = item;
+
+                        const label = document.createElement('label');
+                        label.htmlFor = `${item}`;
+                        label.textContent = item;
+
+                        checkboxWrapper.appendChild(checkbox);
+                        checkboxWrapper.appendChild(label);
+
+                        container.appendChild(checkboxWrapper);
+                    });
+                } catch (error) {
+                    console.error('Error fetching data:', error);
+                }
+            };
+
+        </script>
+        </div>
+    </section>
+</body>
+</html>
