@@ -10,6 +10,11 @@ body {
     align-items: center;
 }
 
+/* display: flex;
+flex-direction:column;
+height: 60vh;
+align-items:normal */
+
 .box-container {
     width: 95%;
     margin: 0 auto;
@@ -232,6 +237,12 @@ p {
 
 
 @media screen and (max-width: 768px) {
+
+    body {
+        display: flex;
+        flex-flow: column;
+    }
+
     .container {
         padding: 15px;
     }
@@ -286,3 +297,4 @@ img {
     max-height: 60%;
 
 }
+
